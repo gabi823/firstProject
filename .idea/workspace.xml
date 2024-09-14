@@ -5,12 +5,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="af5ccc2b-1e4a-488d-8c5e-a8d169aa5047" name="Changes" comment="Initializing project files">
-      <change afterPath="$PROJECT_DIR$/.idea/dataSources.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/atlFoodFinder/templates/atlFoodFinder/show_map.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/atlFoodFinder/urls.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/atlFoodFinder/templates/atlFoodFinder/welcome.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/atlFoodFinder/templates/atlFoodFinder/show_map.html" beforeDir="false" afterPath="$PROJECT_DIR$/atlFoodFinder/templates/atlFoodFinder/show_map.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/atlFoodFinder/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/atlFoodFinder/urls.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/atlFoodFinder/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/atlFoodFinder/views.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/firstProject/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/firstProject/urls.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -55,6 +54,7 @@
   "keyToString": {
     "DefaultHtmlFileTemplate": "HTML File",
     "Django Server.firstProject.executor": "Run",
+    "JavaScript Debug.welcome.html.executor": "Run",
     "RunOnceActivity.OpenDjangoStructureViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
@@ -68,7 +68,10 @@
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
-  <component name="RunManager">
+  <component name="RunManager" selected="JavaScript Debug.welcome.html">
+    <configuration name="welcome.html" type="JavascriptDebugType" temporary="true" nameIsGenerated="true" uri="http://localhost:63342/firstProject/atlFoodFinder/templates/atlFoodFinder/welcome.html" useBuiltInWebServerPort="true">
+      <method v="2" />
+    </configuration>
     <configuration name="firstProject" type="Python.DjangoServer" factoryName="Django server">
       <module name="firstProject" />
       <option name="ENV_FILES" value="" />
@@ -94,6 +97,11 @@
       <option name="customRunCommand" value="" />
       <method v="2" />
     </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="JavaScript Debug.welcome.html" />
+      </list>
+    </recent_temporary>
   </component>
   <component name="SharedIndexes">
     <attachedChunks>
@@ -116,6 +124,7 @@
       <workItem from="1725914485098" duration="18000" />
       <workItem from="1726181388763" duration="1248000" />
       <workItem from="1726182656359" duration="743000" />
+      <workItem from="1726283107439" duration="946000" />
     </task>
     <task id="LOCAL-00001" summary="Initializing project files">
       <option name="closed" value="true" />
@@ -141,7 +150,6 @@
         <line-breakpoint enabled="true" type="javascript">
           <url>file://$PROJECT_DIR$/atlFoodFinder/templates/atlFoodFinder/show_map.html</url>
           <line>21</line>
-          <properties lambdaOrdinal="-1" />
           <option name="timeStamp" value="1" />
         </line-breakpoint>
       </breakpoints>
