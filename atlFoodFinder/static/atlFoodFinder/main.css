@@ -1,22 +1,15 @@
 
 body {
   font-size: 14px;
-  font-family: "Rethink Sans";
-  display: flex;
-  align-items: center;
+  font-family: "Rethink Sans", serif;
 }
 
 
 .v1_4 {
-  width: 100%;
-  height: 100%;
-  background: rgba(255,253,253,1);
-  opacity: 1;
-  top: 0;
-  left: 0;
-  overflow: hidden;
-  align-self: center;
+  margin-top: 300px;
+  display: flex;
 }
+
 .v1_5 {
   width: 420px;
   height: 95px;
