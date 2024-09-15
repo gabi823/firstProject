@@ -9,3 +9,6 @@ def welcome(request):
 
 def login(request):
     return render(request, 'atlFoodFinder/login.html')
+
+def createaccount(request):
+    return render(request, 'atlFoodFinder/createaccount.html')
