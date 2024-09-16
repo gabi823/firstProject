@@ -6,11 +6,13 @@ def show_map(request):
 
 def welcome(request):
     return render(request, 'atlFoodFinder/welcome.html')
+# test
 
 def login(request):
     return render(request, 'atlFoodFinder/login.html')
-
 def profile_page(request):
     return render(request, 'atlFoodFinder/profile_page.html')
 def favorites(request):
     return render(request, 'atlFoodFinder/favorites.html')
+def createaccount(request):
+    return render(request, 'atlFoodFinder/createaccount.html')
