@@ -73,7 +73,8 @@
 
             const createAccountHTML =
                 '<h1>Create Account</h1>' +
-                '<form id="login-form">' +
+                '<form id="login-form" method = "post" action = "/create_account/" onsubmit = "return submitCreateAccount(event)>' +
+                '{% csrf_token %}' +
                 '<input type="text" id="username" class="form-input" placeholder="email" required><br>' +
                 '<input type="text" id="username" class="form-input" placeholder="name" required><br>' +
                 '<input type="text" id="username" class="form-input" placeholder="username" required><br>' +
@@ -96,6 +97,33 @@
         };
         const map = new google.maps.Map(document.getElementById('map'), options);
 
+    }
+</script>
+
+<script>
+    function submitCreateAccount(event) {
+        event.preventDefault(); // Prevent the default form submission
+
+        const form = event.target;
+        const formData = new FormData(form);
+
+        fetch('/create_account/', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}' // Include CSRF token for security
+            }
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status == 'success') {
+                    alert(data.message);
+                } else {
+                    alert('Error: ' + data.message());
+                }
+            })
+            .catch(error => console.error('Error: ', error));
+        return false;
     }
 </script>
 

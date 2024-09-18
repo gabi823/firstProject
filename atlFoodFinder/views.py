@@ -6,8 +6,6 @@ from django.contrib.auth.models import User
 from django.http import JsonResponse
 
 # Create your views here.
-def login(request):
-    return render(request, 'atlFoodFinder/login.html')
 
 def profile_page(request):
     return render(request, 'atlFoodFinder/profile_page.html')
