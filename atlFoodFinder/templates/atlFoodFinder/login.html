@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link href="https://fonts.googleapis.com/css?family=Rethink+Sans&display=swap" rel="stylesheet" />
+    <title>ATL Food Finder</title>
+    <style>
+        #map {
+            height: 860px;
+            width: 100%;
+        }
+        .popup-box {
+            font-family: "Rethink Sans", Serif;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            z-index: 9999;
+        }
+        .popup-content {
+            position: relative;
+            background-color: white;
+            padding: 50px;
+            border-radius: 5px;
+        }
+        .close-btn {
+            position: absolute;
+            top: 5px;
+            right: 10px;
+            cursor: pointer;
+            font-size: 24px;
+        }
+        .form-input {
+            margin-bottom: 15px;
+            width: 90%;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        .login-btn, .create-account-btn {
+            padding: 10px 20px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="popup-box"></div>
+    <script>
+        function createPopup(contentHTML) {
+            const popupContainer = document.getElementById('popup-box');
+            const popupBox = document.createElement('div');
+            const popupContent = document.createElement('div');
+
+            popupBox.className = 'popup-box';
+            popupContent.className = 'popup-content';
+            popupContent.innerHTML = contentHTML;
+
+            popupBox.appendChild(popupContent);
+            popupContainer.appendChild(popupBox);
+        }
+            const loginHTML =
+                '<h1>Atlanta Food Finder</h1>' +
+                '<p>discover. eat. repeat.</p>' +
+                '<form id="login-form">' +
+                '<input type="text" id="username" class="form-input" placeholder="username" required><br>' +
+                '<input type="text" id="username" class="form-input" placeholder="password" required><br>' +
+                '<button type="submit" class="login-btn">login</button>' +
+                '<button type="submit" id ="create-account-btn" class="create-account-btn">create account</button>' +
+                '</form>' +
+                '<p id="error-message" style="color: red; display: none;">Invalid username or password</p>';
+
+
+            window.onload = function() {
+                createPopup(loginHTML);
+
+                document.addEventListener('click', function(event) {
+                    if (event.target && event.target.id === 'create-account-btn') {
+                        window.location.href = 'create_account.html'
+                    }
+                })
+            }
+
+    </script>
+
+<div id="map"></div>
+<script>
+    function initMap() {
+        const options = {
+            zoom: 12,
+            center: { lat: 33.748783, lng: -84.388168 },
+        };
+        const map = new google.maps.Map(document.getElementById('map'), options);
+
+    }
+</script>
+
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDgFZC03jZ8-VLPhnewMrcDndXqD475ZOE&callback=initMap" async defer></script>
+
+
+
+</body>
+</html>
