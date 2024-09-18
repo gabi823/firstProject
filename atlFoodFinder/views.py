@@ -1,8 +1,11 @@
 from django.shortcuts import render
+from django.contrib.auth.models import User
+from django.contrib.auth import authenticate, login
+
 
 # Create your views here.
-def show_map(request):
-    return render(request, 'atlFoodFinder/show_map.html')
+def login(request):
+    return render(request, 'atlFoodFinder/login.html')
 
 def profile_page(request):
     return render(request, 'atlFoodFinder/profile_page.html')
