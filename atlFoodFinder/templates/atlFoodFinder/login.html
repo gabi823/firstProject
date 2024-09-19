@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="csrf-token" content="{{ csrf_token }}">
     <link href="https://fonts.googleapis.com/css?family=Rethink+Sans&display=swap" rel="stylesheet" />
     <title>ATL Food Finder</title>
     <style>
@@ -73,11 +74,11 @@
             const loginHTML =
                 '<h1>Atlanta Food Finder</h1>' +
                 '<p>discover. eat. repeat.</p>' +
-                '<form id="login-form">' +
-                '<input type="text" id="username" class="form-input" placeholder="username" required><br>' +
-                '<input type="text" id="username" class="form-input" placeholder="password" required><br>' +
+                '<form id="login-form" method = "post" action = "/login/" onsubmit = "return submitLogin(event)">' +
+                '<input type="text" name="username" class="form-input" placeholder="username" required><br>' +
+                '<input type="password" name="password" class="form-input" placeholder="password" required><br>' +
                 '<button type="submit" class="login-btn">login</button>' +
-                '<button type="submit" id ="create-account-btn" class="create-account-btn">create account</button>' +
+                '<button type="button" id ="create-account-btn" class="create-account-btn">create account</button>' +
                 '</form>' +
                 '<p id="error-message" style="color: red; display: none;">Invalid username or password</p>';
 
@@ -101,6 +102,37 @@
         };
         const map = new google.maps.Map(document.getElementById('map'), options);
 
+    }
+</script>
+
+<script>
+    function submitLogin(event) {
+        event.preventDefault(); // Prevent the default form submission
+
+        const form = event.target;
+        const formData = new FormData(form);
+
+        const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+        fetch('/login/', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRFToken': csrfToken // Include CSRF token for security
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                alert(data.message);
+                // Redirect to profile page or update the UI as needed
+            } else {
+                document.getElementById('error-message').style.display = 'block';
+            }
+        })
+        .catch(error => console.error('Error:', error));
+
+        return false; // Prevent form from submitting the default way
     }
 </script>
 
