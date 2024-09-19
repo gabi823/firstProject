@@ -85,11 +85,9 @@
             window.onload = function() {
                 createPopup(loginHTML);
 
-                document.addEventListener('click', function(event) {
-                    if (event.target && event.target.id === 'create-account-btn') {
-                        window.location.href = 'create_account.html'
-                    }
-                })
+                document.getElementById('create-account-btn').addEventListener('click', function() {
+                    window.location.href = 'create_account.html';
+                 });
             }
 
     </script>

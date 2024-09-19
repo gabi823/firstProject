@@ -9,6 +9,9 @@ from django.http import JsonResponse
 def login(request):
     return render(request, 'atlFoodFinder/login.html')
 
+def create_account(request):
+    return render(request, 'atlFoodFinder/create_account.html')
+
 def profile_page(request):
     return render(request, 'atlFoodFinder/profile_page.html')
 def favorites(request):
