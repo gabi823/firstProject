@@ -20,7 +20,8 @@ def create_account(request):
         try:
             user = User.objects.create_user(username=username, password=password, email=email)
             user.save()
-            return JsonResponse({'status': 'success', 'message': 'Account created successfully'})
+            login(request, user)
+            return redirect('atlFoodFinder:show_map')
         except Exception as e:
             return JsonResponse({'status': 'error', 'message': str(e)})
 
@@ -36,8 +37,11 @@ def login_user(request):
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
-            return JsonResponse({'status': 'success', 'message': 'Logged in successfully'})
+            return redirect('atlFoodFinder:show_map')
         else:
             return JsonResponse({'status': 'error', 'message': 'Invalid username or password'})
 
     return render(request, 'atlFoodFinder/login.html')
+
+def show_map(request):
+    return render(request, 'atlFoodFinder/show_map.html')
