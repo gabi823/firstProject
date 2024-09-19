@@ -6,9 +6,8 @@
   <component name="ChangeListManager">
     <list default="true" id="af5ccc2b-1e4a-488d-8c5e-a8d169aa5047" name="Changes" comment="redid login/create account">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/atlFoodFinder/templates/atlFoodFinder/create_account.html" beforeDir="false" afterPath="$PROJECT_DIR$/atlFoodFinder/templates/atlFoodFinder/create_account.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/atlFoodFinder/templates/atlFoodFinder/profile_page.html" beforeDir="false" afterPath="$PROJECT_DIR$/atlFoodFinder/templates/atlFoodFinder/profile_page.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/atlFoodFinder/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/atlFoodFinder/views.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/db.sqlite3" beforeDir="false" afterPath="$PROJECT_DIR$/db.sqlite3" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -49,33 +48,33 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;DefaultHtmlFileTemplate&quot;: &quot;HTML File&quot;,
-    &quot;Django Server.firstProject.executor&quot;: &quot;Run&quot;,
-    &quot;JavaScript Debug.create_account.html.executor&quot;: &quot;Run&quot;,
-    &quot;JavaScript Debug.favorites.html.executor&quot;: &quot;Run&quot;,
-    &quot;JavaScript Debug.login.html (1).executor&quot;: &quot;Run&quot;,
-    &quot;JavaScript Debug.login.html.executor&quot;: &quot;Run&quot;,
-    &quot;JavaScript Debug.profile_page.html.executor&quot;: &quot;Run&quot;,
-    &quot;JavaScript Debug.show_map.html (1).executor&quot;: &quot;Run&quot;,
-    &quot;JavaScript Debug.show_map.html.executor&quot;: &quot;Run&quot;,
-    &quot;JavaScript Debug.welcome.html.executor&quot;: &quot;Run&quot;,
-    &quot;Python.urls.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.OpenDjangoStructureViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.pycharm.django.structure.promotion.once.per.project&quot;: &quot;true&quot;,
-    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;loginThree&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/Users/mayazhang/loginThree&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "DefaultHtmlFileTemplate": "HTML File",
+    "Django Server.firstProject.executor": "Run",
+    "JavaScript Debug.create_account.html.executor": "Run",
+    "JavaScript Debug.favorites.html.executor": "Run",
+    "JavaScript Debug.login.html (1).executor": "Run",
+    "JavaScript Debug.login.html.executor": "Run",
+    "JavaScript Debug.profile_page.html.executor": "Run",
+    "JavaScript Debug.show_map.html (1).executor": "Run",
+    "JavaScript Debug.show_map.html.executor": "Run",
+    "JavaScript Debug.welcome.html.executor": "Run",
+    "Python.urls.executor": "Run",
+    "RunOnceActivity.OpenDjangoStructureViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.pycharm.django.structure.promotion.once.per.project": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "git-widget-placeholder": "profile",
+    "last_opened_file_path": "/Users/mayazhang/profile",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/atlFoodFinder/static/atlFoodFinder" />
@@ -166,6 +165,7 @@
       <workItem from="1726764342301" duration="439000" />
       <workItem from="1726764796844" duration="39000" />
       <workItem from="1726764838940" duration="4282000" />
+      <workItem from="1726787719989" duration="1977000" />
     </task>
     <task id="LOCAL-00001" summary="Initializing project files">
       <option name="closed" value="true" />
@@ -231,7 +231,15 @@
       <option name="project" value="LOCAL" />
       <updated>1726769430125</updated>
     </task>
-    <option name="localTasksCounter" value="9" />
+    <task id="LOCAL-00009" summary="redid login/create account">
+      <option name="closed" value="true" />
+      <created>1726788632358</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1726788632358</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">

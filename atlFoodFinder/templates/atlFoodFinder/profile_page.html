@@ -293,7 +293,36 @@
         <p>Email: {{ user.email }}</p>
         <p>First Name: {{ user.first_name }}</p>
         <p>Last Name: {{ user.last_name }}</p>
+
+        <button id="change-password-btn">Change Password</button>
+
+        <div id="change-password-form" style="display:none">
+            <form method="post" id="password-change-form">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit">Submit New Password</button>
+            </form>
+        </div>
+
+        {% if messages %}
+            <ul>
+                {% for message in messages %}
+                    <li>{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
     </div>
+
+    <script>
+        document.getElementById("change-password-btn").addEventListener("click", function () {
+            var form = document.getElementById("change-password-form");
+            if (form.style.display === "none") {
+                form.style.display = "block";
+            } else {
+                form.style.display = "none";
+            }
+        });
+    </script>
 
     <script>
         document.addEventListener("DOMContentLoaded", function () {

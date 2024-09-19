@@ -27,10 +27,6 @@ def profile_page(request):
     else:
         form = PasswordChangeForm(user=request.user)
 
-    context = {
-        'user': request.user,
-        'form': form
-    }
     return render(request, 'atlFoodFinder/profile_page.html', {
         'user': request.user,
     })
