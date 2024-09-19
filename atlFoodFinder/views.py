@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import User
 from django.http import JsonResponse
+from django.contrib.auth.decorators import login_required
 
 # Create your views here.
 def create_account(request):
@@ -26,10 +27,14 @@ def profile_page(request):
 def favorites(request):
     return render(request, 'atlFoodFinder/favorites.html')
 
+@login_required
 def show_map(request):
     return render(request, 'atlFoodFinder/show_map.html')
 
 def login_user(request):
+    if request.user.is_authenticated:
+        return redirect('atlFoodFinder:show_map')
+
     if request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('password')
@@ -40,6 +45,6 @@ def login_user(request):
             login(request, user)
             return redirect ('atlFoodFinder:show_map')
         else:
-            return JsonResponse({'status': 'error', 'message': 'Invalid username or password'})
+            return render(request, 'atlFoodFinder/login.html', {'message': 'Invalid username or password'})
 
     return render(request, 'atlFoodFinder/login.html')
