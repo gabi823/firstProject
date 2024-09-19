@@ -3,6 +3,7 @@ from . import views
 
 app_name = "atlFoodFinder"
 urlpatterns = [
+    path('', views.show_map, name='welcome'),
     path('profile_page/', views.profile_page, name='profile_page'),
     path('favorites/', views.favorites, name='favorites'),
     path('/login/create_account/', views.create_account, name='create_account'),
