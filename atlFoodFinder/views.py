@@ -1,13 +1,9 @@
 from django.shortcuts import render, redirect
-from django.contrib.auth.views import LoginView
-from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import User
 from django.http import JsonResponse
 
 # Create your views here.
-def login(request):
-    return render(request, 'atlFoodFinder/login.html')
 
 def profile_page(request):
     return render(request, 'atlFoodFinder/profile_page.html')
@@ -28,7 +24,7 @@ def create_account(request):
         except Exception as e:
             return JsonResponse({'status': 'error', 'message': str(e)})
 
-    return redirect('/')  # Redirect to home or the login page if accessed via GET
+    return render(request, 'atlFoodFinder/create_account.html')
 
 
 def login_user(request):
@@ -44,4 +40,4 @@ def login_user(request):
         else:
             return JsonResponse({'status': 'error', 'message': 'Invalid username or password'})
 
-    return redirect('/')  # Redirect to home or the login page if accessed via GET
+    return render(request, 'atlFoodFinder/login.html')
