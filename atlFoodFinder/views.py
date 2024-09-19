@@ -5,7 +5,22 @@ from django.http import JsonResponse
 
 # Create your views here.
 def create_account(request):
+    if request.method == 'POST':
+        username = request.POST['username']
+        password = request.POST['password']
+        email = request.POST['email']
+
+        # Create a new user
+        try:
+            user = User.objects.create_user(username=username, password=password, email=email)
+            user.save()
+            login(request, user)  # Automatically log in the user
+            return redirect('atlFoodFinder:show_map')  # Redirect to show_map page
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)})
+
     return render(request, 'atlFoodFinder/create_account.html')
+
 def profile_page(request):
     return render(request, 'atlFoodFinder/profile_page.html')
 def favorites(request):
@@ -13,24 +28,6 @@ def favorites(request):
 
 def show_map(request):
     return render(request, 'atlFoodFinder/show_map.html')
-
-def create_account_action(request):
-    if request.method == 'POST':
-        username = request.POST.get('username')
-        password = request.POST.get('password')
-        email = request.POST.get('email')
-
-        # Create a new user
-        try:
-            user = User.objects.create_user(username=username, password=password, email=email)
-            user.save()
-            login(request, user)
-            return redirect('atlFoodFinder:show_map')
-        except Exception as e:
-            return JsonResponse({'status': 'error', 'message': str(e)})
-
-    return render(request, 'atlFoodFinder/create_account.html')
-
 
 def login_user(request):
     if request.method == 'POST':
