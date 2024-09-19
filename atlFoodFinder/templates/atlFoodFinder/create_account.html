@@ -74,7 +74,8 @@
 
             const createAccountHTML =
                 '<h1>Create Account</h1>' +
-                '<form id="login-form" method = "post" action = "/create_account/" onsubmit = "return submitCreateAccount(event)">' +
+                '<form id="login-form" method = "post" action = "/create_account/">' +
+                '{% csrf_token %}' +
                 '<input type="email" name="email" class="form-input" placeholder="Email" required><br>' +
                 '<input type="text" name="name" class="form-input" placeholder="First and Last Name" required><br>' +
                 '<input type="text" name="username" class="form-input" placeholder="Username" required><br>' +
@@ -100,34 +101,34 @@
     }
 </script>
 
-<script>
-    function submitCreateAccount(event) {
-        event.preventDefault(); // Prevent the default form submission
-
-        const form = event.target;
-        const formData = new FormData(form);
-
-        const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-
-        fetch('/create_account/', {
-            method: 'POST',
-            body: formData,
-            headers: {
-                'X-CSRFToken': csrfToken // Include CSRF token for security
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.status === 'success') {
-                alert(data.message);
-            } else {
-                alert('Error: ' + data.message());
-            }
-        })
-        .catch(error => console.error('Error: ', error));
-        return false;
-    }
-</script>
+{#<script>#}
+{#    function submitCreateAccount(event) {#}
+{#        event.preventDefault(); // Prevent the default form submission#}
+{##}
+{#        const form = event.target;#}
+{#        const formData = new FormData(form);#}
+{##}
+{#        const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');#}
+{##}
+{#        fetch('/create_account/', {#}
+{#            method: 'POST',#}
+{#            body: formData,#}
+{#            headers: {#}
+{#                'X-CSRFToken': csrfToken // Include CSRF token for security#}
+{#            }#}
+{#        })#}
+{#        .then(response => response.json())#}
+{#        .then(data => {#}
+{#            if (data.status === 'success') {#}
+{#                alert(data.message);#}
+{#            } else {#}
+{#                alert('Error: ' + data.message());#}
+{#            }#}
+{#        })#}
+{#        .catch(error => console.error('Error: ', error));#}
+{#        return false;#}
+{#    }#}
+{#</script>#}
 
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDgFZC03jZ8-VLPhnewMrcDndXqD475ZOE&callback=initMap" async defer></script>
 

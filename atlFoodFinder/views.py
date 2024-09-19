@@ -6,9 +6,9 @@ from django.http import JsonResponse
 # Create your views here.
 def create_account(request):
     if request.method == 'POST':
-        username = request.POST['username']
-        password = request.POST['password']
-        email = request.POST['email']
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        email = request.POST.get('email')
 
         # Create a new user
         try:
