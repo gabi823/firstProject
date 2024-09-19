@@ -5,11 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="af5ccc2b-1e4a-488d-8c5e-a8d169aa5047" name="Changes" comment="redid login/create account">
-      <change beforePath="$PROJECT_DIR$/.idea/firstProject.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/firstProject.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/atlFoodFinder/templates/atlFoodFinder/create_account.html" beforeDir="false" afterPath="$PROJECT_DIR$/atlFoodFinder/templates/atlFoodFinder/create_account.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/atlFoodFinder/templates/atlFoodFinder/login.html" beforeDir="false" afterPath="$PROJECT_DIR$/atlFoodFinder/templates/atlFoodFinder/login.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/atlFoodFinder/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/atlFoodFinder/urls.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/atlFoodFinder/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/atlFoodFinder/views.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -38,7 +35,7 @@
   <component name="GithubPullRequestsUISettings"><![CDATA[{
   "selectedUrlAndAccountId": {
     "url": "https://github.com/gabi823/firstProject.git",
-    "accountId": "da4dc029-d192-4f84-8809-be28675b5a8d"
+    "accountId": "017c8510-7a20-443d-b1ab-04eef943ba89"
   }
 }]]></component>
   <component name="ProjectColorInfo">{
@@ -56,6 +53,7 @@
     "Django Server.firstProject.executor": "Run",
     "JavaScript Debug.create_account.html.executor": "Run",
     "JavaScript Debug.favorites.html.executor": "Run",
+    "JavaScript Debug.login.html (1).executor": "Run",
     "JavaScript Debug.login.html.executor": "Run",
     "JavaScript Debug.profile_page.html.executor": "Run",
     "JavaScript Debug.show_map.html (1).executor": "Run",
@@ -66,8 +64,8 @@
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.pycharm.django.structure.promotion.once.per.project": "true",
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "git-widget-placeholder": "loginTwo",
-    "last_opened_file_path": "/Users/mayazhang/loginChanges/loginChangesTwo",
+    "git-widget-placeholder": "searchBar",
+    "last_opened_file_path": "/Users/gabilong/searchBar",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -87,11 +85,11 @@
       <recent name="$PROJECT_DIR$/atlFoodFinder/templates/atlFoodFinder" />
     </key>
   </component>
-  <component name="RunManager" selected="JavaScript Debug.login.html">
+  <component name="RunManager" selected="JavaScript Debug.login.html (1)">
     <configuration name="create_account.html" type="JavascriptDebugType" temporary="true" nameIsGenerated="true" uri="http://localhost:63342/mapPage/atlFoodFinder/templates/atlFoodFinder/create_account.html" useBuiltInWebServerPort="true">
       <method v="2" />
     </configuration>
-    <configuration name="favorites.html" type="JavascriptDebugType" temporary="true" nameIsGenerated="true" uri="http://localhost:63342/mapPage/atlFoodFinder/templates/atlFoodFinder/favorites.html" useBuiltInWebServerPort="true">
+    <configuration name="login.html (1)" type="JavascriptDebugType" temporary="true" nameIsGenerated="true" uri="http://localhost:63342/searchBar/atlFoodFinder/templates/atlFoodFinder/login.html" useBuiltInWebServerPort="true">
       <method v="2" />
     </configuration>
     <configuration name="login.html" type="JavascriptDebugType" temporary="true" nameIsGenerated="true" uri="http://localhost:63342/mapPage/atlFoodFinder/templates/atlFoodFinder/login.html" useBuiltInWebServerPort="true">
@@ -130,11 +128,11 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="JavaScript Debug.login.html (1)" />
         <item itemvalue="JavaScript Debug.login.html" />
         <item itemvalue="JavaScript Debug.create_account.html" />
         <item itemvalue="JavaScript Debug.show_map.html" />
         <item itemvalue="JavaScript Debug.profile_page.html" />
-        <item itemvalue="JavaScript Debug.favorites.html" />
       </list>
     </recent_temporary>
   </component>
@@ -162,6 +160,7 @@
       <workItem from="1726283107439" duration="15470000" />
       <workItem from="1726519748778" duration="21158000" />
       <workItem from="1726691209856" duration="5908000" />
+      <workItem from="1726709788988" duration="2095000" />
     </task>
     <task id="LOCAL-00001" summary="Initializing project files">
       <option name="closed" value="true" />
