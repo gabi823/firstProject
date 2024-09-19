@@ -280,11 +280,20 @@
                     </div>
                 </div>
                 </a>
-                <i class='material-icons' id="log_out">logout</i>
+                <a href ="{% url 'atlFoodFinder:logout_user' %}">>
+                    <i class='material-icons' id="log_out">logout</i>
+                </a>
             </li>
         </ul>
     </div>
 
+    <div class="home-section">
+        <h2>User Profile</h2>
+        <p>Username: {{ user.username }}</p>
+        <p>Email: {{ user.email }}</p>
+        <p>First Name: {{ user.first_name }}</p>
+        <p>Last Name: {{ user.last_name }}</p>
+    </div>
 
     <script>
         document.addEventListener("DOMContentLoaded", function () {
