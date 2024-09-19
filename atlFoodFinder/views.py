@@ -5,6 +5,9 @@ from django.http import JsonResponse
 
 # Create your views here.
 
+def create_account(request):
+    return render(request, 'atlFoodFinder/create_account.html')
+
 def profile_page(request):
     return render(request, 'atlFoodFinder/profile_page.html')
 def favorites(request):
