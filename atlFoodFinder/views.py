@@ -36,10 +36,18 @@ def create_account(request):
         username = request.POST.get('username')
         password = request.POST.get('password')
         email = request.POST.get('email')
+        first_name = request.POST.get('first_name')
+        last_name = request.POST.get('last_name')
 
         # Create a new user
         try:
-            user = User.objects.create_user(username=username, password=password, email=email)
+            user = User.objects.create_user(
+                username=username,
+                password=password,
+                email=email,
+                first_name=first_name,
+                last_name=last_name
+            )
             user.save()
             login(request, user)  # Automatically log in the user
             return redirect('atlFoodFinder:show_map')  # Redirect to show_map page
