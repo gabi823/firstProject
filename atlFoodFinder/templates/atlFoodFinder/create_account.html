@@ -11,7 +11,7 @@
             width: 100%;
         }
         .popup-box {
-            font-family: "Rethink Sans", Serif;
+            font-family: "Rethink Sans", serif;
             position: fixed;
             top: 0;
             left: 0;
@@ -44,7 +44,7 @@
             border-radius: 5px;
             border: 1px solid #ccc;
         }
-        ..create-account-btn {
+        .create-account-btn {
             padding: 10px 20px;
             background-color: #007BFF;
             color: white;
@@ -80,7 +80,7 @@
                 '<input type="text" name="name" class="form-input" placeholder="First and Last Name" required><br>' +
                 '<input type="text" name="username" class="form-input" placeholder="Username" required><br>' +
                 '<input type="password" name="password" class="form-input" placeholder="Password" required><br>' +
-                '<button type="submit" class="login-btn">Create Account</button>' +
+                '<button type="submit" class="create-account-btn">Create Account</button>' +
                 '</form>';
 
             window.onload = function() {
@@ -101,34 +101,34 @@
     }
 </script>
 
-{#<script>#}
-{#    function submitCreateAccount(event) {#}
-{#        event.preventDefault(); // Prevent the default form submission#}
-{##}
-{#        const form = event.target;#}
-{#        const formData = new FormData(form);#}
-{##}
-{#        const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');#}
-{##}
-{#        fetch('/create_account/', {#}
-{#            method: 'POST',#}
-{#            body: formData,#}
-{#            headers: {#}
-{#                'X-CSRFToken': csrfToken // Include CSRF token for security#}
-{#            }#}
-{#        })#}
-{#        .then(response => response.json())#}
-{#        .then(data => {#}
-{#            if (data.status === 'success') {#}
-{#                alert(data.message);#}
-{#            } else {#}
-{#                alert('Error: ' + data.message());#}
-{#            }#}
-{#        })#}
-{#        .catch(error => console.error('Error: ', error));#}
-{#        return false;#}
-{#    }#}
-{#</script>#}
+<script>
+    function submitCreateAccount(event) {
+        event.preventDefault();
+        const form = event.target;
+        const formData = new FormData(form);
+        const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+        fetch('/create_account/', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRFToken': csrfToken
+            }
+        })
+            .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                alert(data.message);
+            } else {
+               alert('Error: ' + data.message());
+            }
+       })
+       .catch(error => console.error('Error: ', error));
+        return false;
+    }
+</script>
+
+
 
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDgFZC03jZ8-VLPhnewMrcDndXqD475ZOE&callback=initMap" async defer></script>
 
