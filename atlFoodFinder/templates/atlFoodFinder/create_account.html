@@ -102,35 +102,6 @@
     }
 </script>
 
-{#<script>#}
-{#    function submitCreateAccount(event) {#}
-{#        event.preventDefault(); // Prevent the default form submission#}
-{##}
-{#        const form = event.target;#}
-{#        const formData = new FormData(form);#}
-{##}
-{#        const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');#}
-{##}
-{#        fetch('/create_account/', {#}
-{#            method: 'POST',#}
-{#            body: formData,#}
-{#            headers: {#}
-{#                'X-CSRFToken': csrfToken // Include CSRF token for security#}
-{#            }#}
-{#        })#}
-{#        .then(response => response.json())#}
-{#        .then(data => {#}
-{#            if (data.status === 'success') {#}
-{#                alert(data.message);#}
-{#            } else {#}
-{#                alert('Error: ' + data.message());#}
-{#            }#}
-{#        })#}
-{#        .catch(error => console.error('Error: ', error));#}
-{#        return false;#}
-{#    }#}
-{#</script>#}
-
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDgFZC03jZ8-VLPhnewMrcDndXqD475ZOE&callback=initMap" async defer></script>
 
 
