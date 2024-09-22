@@ -5,9 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="af5ccc2b-1e4a-488d-8c5e-a8d169aa5047" name="Changes" comment="redid login/create account">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/atlFoodFinder/templates/atlFoodFinder/create_account.html" beforeDir="false" afterPath="$PROJECT_DIR$/atlFoodFinder/templates/atlFoodFinder/create_account.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/atlFoodFinder/templates/atlFoodFinder/show_map.html" beforeDir="false" afterPath="$PROJECT_DIR$/atlFoodFinder/templates/atlFoodFinder/show_map.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/atlFoodFinder/templates/atlFoodFinder/profile_page.html" beforeDir="false" afterPath="$PROJECT_DIR$/atlFoodFinder/templates/atlFoodFinder/profile_page.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/atlFoodFinder/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/atlFoodFinder/urls.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/atlFoodFinder/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/atlFoodFinder/views.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -36,7 +37,7 @@
   <component name="GithubPullRequestsUISettings"><![CDATA[{
   "selectedUrlAndAccountId": {
     "url": "https://github.com/gabi823/firstProject.git",
-    "accountId": "017c8510-7a20-443d-b1ab-04eef943ba89"
+    "accountId": "da4dc029-d192-4f84-8809-be28675b5a8d"
   }
 }]]></component>
   <component name="InvalidFacetManager">
@@ -71,8 +72,8 @@
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.pycharm.django.structure.promotion.once.per.project": "true",
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "git-widget-placeholder": "mapChange",
-    "last_opened_file_path": "/Users/gabilong/mapChange",
+    "git-widget-placeholder": "profileTwo",
+    "last_opened_file_path": "/Users/mayazhang/profileTwo",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -163,6 +164,7 @@
       <workItem from="1726764796844" duration="39000" />
       <workItem from="1726764838940" duration="4282000" />
       <workItem from="1726792201027" duration="375000" />
+      <workItem from="1726969221745" duration="1703000" />
     </task>
     <task id="LOCAL-00001" summary="Initializing project files">
       <option name="closed" value="true" />
