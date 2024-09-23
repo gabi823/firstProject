@@ -6,32 +6,85 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <title>ATL Food Finder</title>
     <style>
+        /* General page layout */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Rethink Sans", sans-serif;
+        }
+
         #map {
             height: 860px;
             width: 100%;
             position: relative; /* Ensure the map container is positioned relatively */
         }
 
-        #search-bar {
+        #search-container {
             position: absolute;
-            top: 15px; /* Adjust the vertical position */
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 5; /* Ensure it's on top of the map */
-            width: 300px; /* Set the desired width */
-            padding: 10px; /* Add some padding for better UI */
-            border: 1px solid #ccc;
+            top: 20px;
+            left: 150px; /* Adjust this to ensure it sits next to your sidebar */
+            z-index: 5;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            background-color: white;
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        #search-bar {
+            width: 200px;
+            padding: 5px;
             border-radius: 4px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3); /* Add a subtle shadow */
-            background-color: white; /* Make sure the background is visible */
+            border: 1px solid #ccc;
+        }
+
+        #filters {
+            display: flex;
+            gap: 10px;
+        }
+
+        #results-container {
+            position: absolute;
+            top: 60px;
+            left: 150px;
+            width: 300px;
+            max-height: 300px; /* Max height when expanded */
+            overflow-y: auto;
+            background-color: white;
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            transition: max-height 0.5s ease-in-out; /* Smooth transition */
+        }
+
+        #minimize-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        #results {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .result-item {
+            padding: 10px;
+            border-bottom: 1px solid #ccc;
+            cursor: pointer;
         }
 
         #info-window {
             position: absolute;
             bottom: 15px;
             right: 15px;
-            width: 250px;
-            height: auto;
+            width: 300px;
             background-color: white;
             border: 1px solid #ccc;
             border-radius: 4px;
@@ -44,6 +97,25 @@
             float: right;
             cursor: pointer;
         }
+
+        #restaurant-name {
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        #restaurant-details {
+            margin-top: 10px;
+        }
+
+        #restaurant-details img {
+            width: 100%;
+            height: auto;
+        }
+
+        #restaurant-details p {
+            margin: 5px 0;
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -271,16 +343,44 @@
     </style>
 </head>
 <body>
+    <!-- Search bar and filters -->
+    <div id="search-container">
+        <input id="search-bar" type="text" placeholder="Search for restaurants, cuisine, or location">
+        <div id="filters">
+            <label for="distance-filter">Distance (miles):</label>
+            <input id="distance-filter" type="number" value="5" min="1" max="50">
+            <label for="rating-filter">Rating:</label>
+            <select id="rating-filter">
+                <option value="0">Any</option>
+                <option value="4">4 stars & up</option>
+                <option value="4.5">4.5 stars & up</option>
+            </select>
+        </div>
+        <button id="search-button">Search</button>
+    </div>
+
+    <!-- Map -->
     <div id="map"></div>
+
+    <!-- Restaurant results -->
+    <div id="results-container">
+        <button id="minimize-btn">
+            <i class="material-icons" id="minimize-icon">expand_less</i>
+        </button>
+        <div id="results"></div>
+    </div>
+
+    <!-- Info window for restaurant details -->
     <div id="info-window">
         <span id="close-btn">x</span>
         <h3 id="restaurant-name"></h3>
-        <p id="restaurant-rating"></p>
+        <div id="restaurant-details">
+            <!-- Placeholder for dynamic content -->
+        </div>
     </div>
+
 <script>
-    let map;
-    let infoWindow;
-    let service;
+    let map, service, markers = [], defaultMarkers = [];
 
     function initMap() {
         // Initialize the map centered at user's location
@@ -296,69 +396,172 @@
                     zoom: 13
                 });
 
-                // Call Places API to fetch nearby restaurants
-                const request = {
-                    location: userLocation,
-                    radius: 8046, // 5 miles in meters
-                    type: ['restaurant']
-                };
+                // Fetch default restaurants within 5 miles
+                    fetchRestaurants(userLocation, 8046); // 5 miles in meters
 
-                service = new google.maps.places.PlacesService(map);
-                service.nearbySearch(request, handleResults);
-
-                // Info window for displaying restaurant details
-                infoWindow = new google.maps.InfoWindow();
-
-            }, () => {
-                handleLocationError(true);
-            });
-        } else {
-            handleLocationError(false);
+                    // Add event listener for search button
+                    document.getElementById('search-button').addEventListener('click', searchRestaurants);
+                });
         }
     }
 
-    function handleResults(results, status) {
+    function fetchRestaurants(location, radius, keyword = "") {
+            const request = {
+                location: location,
+                radius: radius,
+                type: ['restaurant'],
+                keyword: keyword
+            };
+
+        service = new google.maps.places.PlacesService(map);
+        service.nearbySearch(request, handleDefaultResults);
+    }
+
+    // Display default markers and populate restaurant list for default search (5-mile radius)
+    function handleDefaultResults(results, status) {
         if (status === google.maps.places.PlacesServiceStatus.OK) {
-            for (let i = 0; i < results.length; i++) {
-                createMarker(results[i]);
+            document.getElementById('results').style.display = 'block';
+            const resultContainer = document.getElementById('results');
+            resultContainer.innerHTML = ''; // Clear previous results
+
+            results.forEach((place) => {
+                // Create markers for each place
+                const marker = new google.maps.Marker({
+                    map: map,
+                    position: place.geometry.location,
+                    title: place.name
+                });
+
+                defaultMarkers.push(marker);
+
+                // Add restaurant name to the default list
+                const resultItem = document.createElement('div');
+                resultItem.classList.add('result-item');
+                resultItem.textContent = place.name;
+                resultItem.addEventListener('click', function () {
+                    showRestaurantDetails(place);
+                });
+
+                resultContainer.appendChild(resultItem);
+
+                // Marker click event to show restaurant details
+                google.maps.event.addListener(marker, 'click', function () {
+                    showRestaurantDetails(place);
+                });
+            });
+        }
+    }
+
+
+    // Handle search results and display markers and list, supporting pagination
+    function handleSearchResults(results, status, pagination) {
+        if (status === google.maps.places.PlacesServiceStatus.OK) {
+            document.getElementById('results').style.display = 'block';
+            const resultContainer = document.getElementById('results');
+            resultContainer.innerHTML = ''; // Clear previous results
+
+            results.forEach((place) => {
+                // Create markers for each place
+                const marker = new google.maps.Marker({
+                    map: map,
+                    position: place.geometry.location,
+                    title: place.name
+                });
+
+                markers.push(marker);
+
+                // Add restaurant name to search results list
+                const resultItem = document.createElement('div');
+                resultItem.classList.add('result-item');
+                resultItem.textContent = place.name;
+                resultItem.addEventListener('click', function () {
+                    showRestaurantDetails(place);
+                });
+
+                resultContainer.appendChild(resultItem);
+
+                // Marker click event to show restaurant details
+                google.maps.event.addListener(marker, 'click', function () {
+                    showRestaurantDetails(place);
+                });
+            });
+
+            // If there are more results, handle pagination
+            if (pagination && pagination.hasNextPage) {
+                const loadMoreButton = document.createElement('button');
+                loadMoreButton.innerText = "Load More";
+                loadMoreButton.onclick = () => {
+                    pagination.nextPage(); // Load the next set of results
+                };
+                resultContainer.appendChild(loadMoreButton);
             }
         }
     }
 
-    function createMarker(place) {
-        const marker = new google.maps.Marker({
-            map: map,
-            position: place.geometry.location,
-            title: place.name
+        // Toggle minimize/maximize for search results
+        document.getElementById('minimize-btn').addEventListener('click', function() {
+            const resultsContainer = document.getElementById('results-container');
+            const minimizeIcon = document.getElementById('minimize-icon');
+
+            if (resultsContainer.style.maxHeight === '0px') {
+                resultsContainer.style.maxHeight = '300px';  // Expand the list
+                minimizeIcon.textContent = 'expand_less';
+            } else {
+                resultsContainer.style.maxHeight = '0px';  // Minimize the list
+                minimizeIcon.textContent = 'expand_more';
+            }
         });
 
-        google.maps.event.addListener(marker, 'click', function() {
-            showRestaurantDetails(place);
-        });
-    }
+        // Search restaurants and display results
+        function searchRestaurants() {
+            // Clear previous markers
+            clearMarkers(defaultMarkers);
+            clearMarkers(markers);
+            markers = [];
 
-    function showRestaurantDetails(place) {
-        document.getElementById('restaurant-name').innerText = place.name;
-        document.getElementById('restaurant-rating').innerText = 'Rating: ' + (place.rating || 'N/A');
+            const searchQuery = document.getElementById('search-bar').value;
+            const distance = parseInt(document.getElementById('distance-filter').value) * 1609; // Convert miles to meters
+            const minRating = document.getElementById('rating-filter').value;
 
-        document.getElementById('info-window').style.display = 'block'; // Show the info window
-    }
+            // Limit distance to within 50 miles radius
+            if (distance > 80467) { // 50 miles
+                alert("Please enter a distance under 50 miles.");
+                return;
+            }
 
-    document.getElementById('close-btn').onclick = function() {
-        document.getElementById('info-window').style.display = 'none'; // Hide the info window when 'x' is clicked
-    };
+            // Fetch restaurants based on search query and filters
+            fetchRestaurants(map.getCenter(), distance, searchQuery);
+        }
 
-    function handleLocationError(browserHasGeolocation) {
-        const errorMessage = browserHasGeolocation
-            ? 'Error: The Geolocation service failed.'
-            : 'Error: Your browser doesn\'t support geolocation.';
-        alert(errorMessage);
-    }
+        // Show detailed information in the info window
+        function showRestaurantDetails(place) {
+            document.getElementById('restaurant-name').innerText = place.name;
+            document.getElementById('restaurant-details').innerHTML = `
+                <p>Rating: ${place.rating || 'N/A'}</p>
+                <p>Address: ${place.vicinity}</p>
+                <p>Opening Hours: ${place.opening_hours ? (place.opening_hours.open_now ? 'Open Now' : 'Closed') : 'N/A'}</p>
+                <a href="https://www.google.com/maps/place/?q=place_id:${place.place_id}" target="_blank">View on Google Maps</a>
+            `;
+
+            document.getElementById('info-window').style.display = 'block'; // Show info window
+        }
+
+        // Clear markers from the map
+        function clearMarkers(markersArray) {
+            for (let i = 0; i < markersArray.length; i++) {
+                markersArray[i].setMap(null);
+            }
+        }
+
+        // Close the info window
+        document.getElementById('close-btn').onclick = function () {
+            document.getElementById('info-window').style.display = 'none';
+        };
 </script>
 
     <div class="sidebar">
         <div class="logo-details">
-            <div class="logo_name">User's Name</div>
+            <div class="logo_name">{{ user.first_name }}</div>
             <i class='material-icons' id="btn">menu</i>
         </div>
         <ul class="nav-list">
@@ -395,7 +598,7 @@
                 <div class="profile-details">
                     <img src="./images/account.png" alt="profileImg">
                     <div class="name_job">
-                        <div class="name">User Name</div>
+                        <div class="name">{{ user.first_name }}</div>
                     </div>
                 </div>
                 </a>
@@ -426,8 +629,6 @@
         </script>
 
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDgFZC03jZ8-VLPhnewMrcDndXqD475ZOE&libraries=places&callback=initMap" async defer></script>
-
-<input id="search-bar" type="text" placeholder="Search for places">
 
 </body>
 </html>
