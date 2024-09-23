@@ -295,27 +295,13 @@
         <button id="change-password-btn">Change Password</button>
 
         <div id="change-password-form" style="display:none">
-            <form method="post" id="password-change-form" action="{% url 'atlFoodFinder:profile_page' %}">
+            <form method="post" id="password-change-form">
                 {% csrf_token %}
-                <label for="new_password1">New Password:</label>
-                <input type="password" name="new_password1" id="new_password1" required><br>
-
-                <label for="new_password2">Confirm New Password:</label>
-                <input type="password" name="new_password2" id="new_password2" required><br>
+                {{ form.as_p }}
 
                 <button type="submit">Submit New Password</button>
             </form>
         </div>
-
-        {% if form.errors %}
-            <ul>
-                {% for field in form %}
-                    {% if field.errors %}
-                        <li>{{ field.label }}: {{ field.errors }}</li>
-                    {% endif %}
-                {% endfor %}
-            </ul>
-        {% endif %}
 
         {% if messages %}
             <ul>

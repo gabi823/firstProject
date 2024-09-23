@@ -7,31 +7,49 @@ from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib import messages
 from django.contrib.auth import logout
+from django import forms
+
 
 # Create your views here.
 
-def logout_user(request):
-    logout(request)
-    return redirect('atlFoodFinder:login_user')
+class CustomPasswordChangeForm(forms.Form):
+    new_password1 = forms.CharField(label="New Password", widget=forms.PasswordInput)
+    new_password2 = forms.CharField(label="Confirm New Password", widget=forms.PasswordInput)
+
+    def clean(self):
+        cleaned_data = super().clean()
+        password1 = cleaned_data.get("new_password1")
+        password2 = cleaned_data.get("new_password2")
+
+        if password1 and password2 and password1 != password2:
+            raise forms.ValidationError("The two password fields didn’t match.")
+
+        return cleaned_data
 
 @login_required
 def profile_page(request):
     if request.method == 'POST':
-        form = PasswordChangeForm(user=request.user, data=request.POST)
+        form = CustomPasswordChangeForm(request.POST)
         if form.is_valid():
-            form.save()
-            update_session_auth_hash(request, form.user)
+            new_password = form.cleaned_data.get('new_password1')
+            user = request.user
+            user.set_password(new_password)
+            update_session_auth_hash(request, user)
             messages.success(request, 'Your password has been successfully updated!')
             return redirect('atlFoodFinder:profile_page')
         else:
             messages.error(request, 'Please correct the error below.')
     else:
-        form = PasswordChangeForm(user=request.user)
+        form = CustomPasswordChangeForm()
 
     return render(request, 'atlFoodFinder/profile_page.html',{
-        'form': form,
         'user': request.user,
+        'form': form,
     })
+
+def logout_user(request):
+    logout(request)
+    return redirect('atlFoodFinder:login_user')
 
 def create_account(request):
     if request.method == 'POST':
