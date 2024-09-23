@@ -75,6 +75,7 @@
                 '<h1>Atlanta Food Finder</h1>' +
                 '<p>discover. eat. repeat.</p>' +
                 '<form id="login-form" method = "post" action = "/login/" onsubmit = "return submitLogin(event)">' +
+                '{% csrf_token %}' +
                 '<input type="text" name="username" class="form-input" placeholder="Username" required><br>' +
                 '<input type="password" name="password" class="form-input" placeholder="Password" required><br>' +
                 '<button type="submit" class="login-btn">login</button>' +
@@ -112,6 +113,11 @@
         const form = event.target;
         const formData = new FormData(form);
 
+        // Debugging: Log the formData to ensure it's being sent correctly
+        for (let entry of formData.entries()) {
+            console.log(entry[0], entry[1]);  // Logs the field name and value
+        }
+
         const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
         fetch('/login/', {
@@ -124,9 +130,12 @@
         .then(response => response.json())
         .then(data => {
             if (data.status === 'success') {
+                console.log('Login successful. Redirecting...'); // Log successful login
+                window.location.href = '/show_map/'; // Redirect to the map page
                 alert(data.message);
                 // Redirect to profile page or update the UI as needed
             } else {
+                console.log('Invalid login credentials'); // Log invalid login attempt
                 document.getElementById('error-message').style.display = 'block';
             }
         })

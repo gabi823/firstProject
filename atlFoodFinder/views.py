@@ -8,6 +8,7 @@ from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib import messages
 from django.contrib.auth import logout
 from django import forms
+from django.http import JsonResponse
 
 
 # Create your views here.
@@ -92,13 +93,17 @@ def login_user(request):
     if request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('password')
+        print(f"Username: {username}, Password: {password}")
 
         # Authenticate the user
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
-            return redirect ('atlFoodFinder:show_map')
+            print(f'User {username} authenticated successfully')
+            return JsonResponse({'status': 'success', 'redirect_url': '/show_map/'})
         else:
-            return render(request, 'atlFoodFinder/login.html', {'message': 'Invalid username or password'})
-
+            print("Invalid credentials")
+            return JsonResponse({'status': 'error', 'message': 'Invalid username or password'})
     return render(request, 'atlFoodFinder/login.html')
+def reviews(request):
+    return render(request, 'atlFoodFinder/reviews.html')
