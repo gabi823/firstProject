@@ -23,12 +23,12 @@
         #search-container {
             position: absolute;
             top: 20px;
-            left: 150px; /* Adjust this to ensure it sits next to your sidebar */
+            left: 100px; /* Adjust this to ensure it sits next to your sidebar */
             z-index: 5;
             display: flex;
             gap: 10px;
             align-items: center;
-            background-color: white;
+            background-color: black;
             padding: 10px;
             border-radius: 5px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
@@ -41,6 +41,14 @@
             border: 1px solid #ccc;
         }
 
+        #search-item {
+            color: white;
+        }
+
+        #search-button {
+            padding: 5px;
+        }
+
         #filters {
             display: flex;
             gap: 10px;
@@ -48,12 +56,12 @@
 
         #results-container {
             position: absolute;
-            top: 60px;
-            left: 150px;
+            top: 85px;
+            left: 100px;
             width: 300px;
             max-height: 300px; /* Max height when expanded */
             overflow-y: auto;
-            background-color: white;
+            background-color: black;
             padding: 10px;
             border-radius: 5px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
@@ -67,11 +75,13 @@
             background: none;
             border: none;
             cursor: pointer;
+            color: white;
         }
 
         #results {
             max-height: 300px;
             overflow-y: auto;
+            color: white;
         }
 
         .result-item {
@@ -85,7 +95,7 @@
             bottom: 15px;
             right: 15px;
             width: 300px;
-            background-color: white;
+            background-color: black;
             border: 1px solid #ccc;
             border-radius: 4px;
             padding: 10px;
@@ -96,15 +106,18 @@
         #close-btn {
             float: right;
             cursor: pointer;
+            color: white;
         }
 
         #restaurant-name {
             font-size: 18px;
             font-weight: bold;
+            color: white;
         }
 
         #restaurant-details {
             margin-top: 10px;
+            color: white;
         }
 
         #restaurant-details img {
@@ -345,11 +358,11 @@
 <body>
     <!-- Search bar and filters -->
     <div id="search-container">
-        <input id="search-bar" type="text" placeholder="Search for restaurants, cuisine, or location">
+        <input id="search-bar" type="text" placeholder="Search for restaurants">
         <div id="filters">
-            <label for="distance-filter">Distance (miles):</label>
+            <label for="distance-filter" id="search-item">Distance (miles):</label>
             <input id="distance-filter" type="number" value="5" min="1" max="50">
-            <label for="rating-filter">Rating:</label>
+            <label for="rating-filter" id="search-item">Rating:</label>
             <select id="rating-filter">
                 <option value="0">Any</option>
                 <option value="4">4 stars & up</option>
@@ -536,14 +549,27 @@
         // Show detailed information in the info window
         function showRestaurantDetails(place) {
             document.getElementById('restaurant-name').innerText = place.name;
+            let photoHTML = '';
+            if (place.photos && place.photos.length > 0) {
+                // Fetch the first photo (you can loop through multiple photos if needed)
+                const photoUrl = place.photos[0].getUrl({ maxWidth: 300, maxHeight: 200 });
+                photoHTML = `<img src="${photoUrl}" alt="${place.name}" />`;
+            }
             document.getElementById('restaurant-details').innerHTML = `
+                ${photoHTML}
                 <p>Rating: ${place.rating || 'N/A'}</p>
                 <p>Address: ${place.vicinity}</p>
                 <p>Opening Hours: ${place.opening_hours ? (place.opening_hours.open_now ? 'Open Now' : 'Closed') : 'N/A'}</p>
-                <a href="https://www.google.com/maps/place/?q=place_id:${place.place_id}" target="_blank">View on Google Maps</a>
+                <a href="https://www.google.com/maps/place/?q=place_id:${place.place_id}" target="_blank" id="restaurant-details">View on Google Maps</a>
             `;
 
             document.getElementById('info-window').style.display = 'block'; // Show info window
+            const markerPosition = {
+                lat: place.geometry.location.lat(),
+                lng: place.geometry.location.lng()
+            };
+            map.setCenter(markerPosition);
+            map.setZoom(16);
         }
 
         // Clear markers from the map
