@@ -75,18 +75,58 @@
             const createAccountHTML =
                 '<h1>Create Account</h1>' +
                 '<form id="login-form" method = "post" action = "/create_account/">' +
-                '{% csrf_token %}' +
-                '<input type="email" name="email" class="form-input" placeholder="Email" required><br>' +
-                '<input type="text" name="first_name" class="form-input" placeholder="First Name" required><br>' +
-                '<input type="text" name="last_name" class="form-input" placeholder="Last Name" required><br>' +
-                '<input type="text" name="username" class="form-input" placeholder="Username" required><br>' +
-                '<input type="password" name="password" class="form-input" placeholder="Password" required><br>' +
-                '<button type="submit" class="create-account-btn">Create Account</button>' +
+                    '{% csrf_token %}' +
+                    '<input type="email" name="email" class="form-input" placeholder="Email" required><br>' +
+                    '<input type="text" name="first_name" class="form-input" placeholder="First Name" required><br>' +
+                    '<input type="text" name="last_name" class="form-input" placeholder="Last Name" required><br>' +
+                    '<input type="text" name="username" class="form-input" placeholder="Username" required><br>' +
+                    '<input type="password" name="password" class="form-input" placeholder="Password" required><br>' +
+                    <ul id="password-requirements">
+                        <li id="min-length">At least 8 characters</li>
+                        <li id="number-required">At least 1 number</li>
+                        <li id="special-required">At least 1 special character</li>
+                    </ul>
+                    '<button type="submit" class="create-account-btn">Create Account</button>' +
                 '</form>';
 
             window.onload = function() {
                 createPopup(createAccountHTML);
-            }
+
+                document.getElementById("password").addEventListener("input", function () {
+                    var password = this.value;
+                    var minLength = document.getElementById("min-length")
+                    var numberRequired = document.getElementById("number-required")
+                    var specialRequired = document.getElementById("special-required")
+
+                    var isValid = true;
+
+                    if (password.length >= 8) {
+                        minLength.style.color = "green";
+                    } else {
+                        minLength.style.color = "red";
+                        isValid = false;
+                    }
+
+                    if (/\d/.test(password)) {
+                        numberRequired.style.color = "green";
+                    } else {
+                        numberRequired.style.color = "red";
+                        isValid = false;
+                    }
+
+                    if (/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
+                        specialRequired.style.color = "green";
+                    } else {
+                        specialRequired.style.color = "red";
+                        isValid = false;
+                    }
+
+                    if (!isValid) {
+                        this.value = "";
+                        alert("Your password doesn't meet the requirements. Please try again.");
+                    }
+                });
+            };
 
     </script>
 
