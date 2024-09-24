@@ -5,10 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="af5ccc2b-1e4a-488d-8c5e-a8d169aa5047" name="Changes" comment="redid login/create account">
-      <change beforePath="$PROJECT_DIR$/atlFoodFinder/templates/atlFoodFinder/create_account.html" beforeDir="false" afterPath="$PROJECT_DIR$/atlFoodFinder/templates/atlFoodFinder/create_account.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/atlFoodFinder/templates/atlFoodFinder/profile_page.html" beforeDir="false" afterPath="$PROJECT_DIR$/atlFoodFinder/templates/atlFoodFinder/profile_page.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/atlFoodFinder/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/atlFoodFinder/urls.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/atlFoodFinder/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/atlFoodFinder/views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/atlFoodFinder/templates/atlFoodFinder/show_map.html" beforeDir="false" afterPath="$PROJECT_DIR$/atlFoodFinder/templates/atlFoodFinder/show_map.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/db.sqlite3" beforeDir="false" afterPath="$PROJECT_DIR$/db.sqlite3" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -34,12 +33,12 @@
     &quot;assignee&quot;: &quot;gabi823&quot;
   }
 }</component>
-  <component name="GithubPullRequestsUISettings"><![CDATA[{
-  "selectedUrlAndAccountId": {
-    "url": "https://github.com/gabi823/firstProject.git",
-    "accountId": "da4dc029-d192-4f84-8809-be28675b5a8d"
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/gabi823/firstProject.git&quot;,
+    &quot;accountId&quot;: &quot;017c8510-7a20-443d-b1ab-04eef943ba89&quot;
   }
-}]]></component>
+}</component>
   <component name="InvalidFacetManager">
     <ignored-facets>
       <facet id="firstProject/invalid/Django" />
@@ -54,34 +53,35 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "DefaultHtmlFileTemplate": "HTML File",
-    "Django Server.firstProject.executor": "Run",
-    "JavaScript Debug.create_account.html.executor": "Run",
-    "JavaScript Debug.favorites.html.executor": "Run",
-    "JavaScript Debug.login.html (1).executor": "Run",
-    "JavaScript Debug.login.html.executor": "Run",
-    "JavaScript Debug.profile_page.html.executor": "Run",
-    "JavaScript Debug.show_map.html (1).executor": "Run",
-    "JavaScript Debug.show_map.html.executor": "Run",
-    "JavaScript Debug.welcome.html.executor": "Run",
-    "Python.urls.executor": "Run",
-    "Python.views.executor": "Run",
-    "RunOnceActivity.OpenDjangoStructureViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.pycharm.django.structure.promotion.once.per.project": "true",
-    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "git-widget-placeholder": "profileTwo",
-    "last_opened_file_path": "/Users/mayazhang/profileTwo",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;DefaultHtmlFileTemplate&quot;: &quot;HTML File&quot;,
+    &quot;Django Server.firstProject.executor&quot;: &quot;Run&quot;,
+    &quot;JavaScript Debug.create_account.html.executor&quot;: &quot;Run&quot;,
+    &quot;JavaScript Debug.favorites.html.executor&quot;: &quot;Run&quot;,
+    &quot;JavaScript Debug.login.html (1).executor&quot;: &quot;Run&quot;,
+    &quot;JavaScript Debug.login.html.executor&quot;: &quot;Run&quot;,
+    &quot;JavaScript Debug.profile_page.html.executor&quot;: &quot;Run&quot;,
+    &quot;JavaScript Debug.show_map.html (1).executor&quot;: &quot;Run&quot;,
+    &quot;JavaScript Debug.show_map.html.executor&quot;: &quot;Run&quot;,
+    &quot;JavaScript Debug.welcome.html.executor&quot;: &quot;Run&quot;,
+    &quot;Python.urls.executor&quot;: &quot;Run&quot;,
+    &quot;Python.views.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.OpenDjangoStructureViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.pycharm.django.structure.promotion.once.per.project&quot;: &quot;true&quot;,
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;searchBarContinued&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Users/gabilong/searchBarContinued&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/atlFoodFinder/static/atlFoodFinder" />
@@ -165,6 +165,8 @@
       <workItem from="1726764838940" duration="4282000" />
       <workItem from="1726792201027" duration="375000" />
       <workItem from="1726969221745" duration="1703000" />
+      <workItem from="1727121373496" duration="1712000" />
+      <workItem from="1727123232421" duration="6907000" />
     </task>
     <task id="LOCAL-00001" summary="Initializing project files">
       <option name="closed" value="true" />
