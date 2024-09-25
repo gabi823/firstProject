@@ -209,11 +209,14 @@
             width: 50px;
             background: none;
         }
+        .name_job{
+            padding-left: 30px;
+            font-weight: bold;
+        }
 
         .home-section {
             position: relative;
-            background: rgb(238,174,202);
-background: radial-gradient(circle, rgba(238,174,202,1) 0%, rgba(148,187,233,1) 100%);
+            background: #11101D;
             overflow: hidden;
             box-sizing: border-box;
             min-height: 100vh;
@@ -226,18 +229,18 @@ background: radial-gradient(circle, rgba(238,174,202,1) 0%, rgba(148,187,233,1) 
             align-items: center;
         }
         .container {
-            background: #fff;
+            background: #eeefe2;
             width: 540px;
             padding: 30px;
             height: auto;
             position: relative;
-            margin-top: 10%;
             box-shadow: 2px 5px 20px rgba(119, 119, 119, 0.5);
             text-align: center;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
+            border-radius: 20px
         }
         .profile {
             width: 70%;
@@ -272,7 +275,8 @@ background: radial-gradient(circle, rgba(238,174,202,1) 0%, rgba(148,187,233,1) 
             border: none;
             color: white;
             cursor: pointer;
-            background-color: #A9A9A9;
+            background-color: #171623;
+            border-radius: 20px
         }
         button:hover {
             background-color: #000;
@@ -355,7 +359,7 @@ background: radial-gradient(circle, rgba(238,174,202,1) 0%, rgba(148,187,233,1) 
             <h2>Change Password</h2>
              <button id="change-password-btn">Change Password</button>
         </div>
-        <div id="change-password-form" style="display:none">
+        <div id="change-password-form" style="display:none;">
             <form method="post" id="password-change-form">
                 {% csrf_token %}
                 {{ form.as_p }}
