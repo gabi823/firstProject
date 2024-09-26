@@ -384,6 +384,7 @@
     <div id="map"></div>
 
     <!-- Restaurant results -->
+    <button id="favorites-btn">Show Favorites</button>
     <div id="results-container">
         <button id="minimize-btn">
             <i class="material-icons" id="minimize-icon">expand_less</i>
@@ -430,9 +431,7 @@
             const request = {
                 location: location,
                 radius: radius,
-                type: [
-                    'restaurant',
-                ],
+                type: ['restaurant'],
                 keyword: keyword
             };
 
@@ -479,7 +478,7 @@
     // Handle search results and display markers and list, supporting pagination
     function handleSearchResults(results, status, pagination) {
         if (status === google.maps.places.PlacesServiceStatus.OK) {
-            document.getElementById('results').style.display = 'block';
+            // document.getElementById('results').style.display = 'block';
             const resultContainer = document.getElementById('results');
             resultContainer.innerHTML = ''; // Clear previous results
 
@@ -491,7 +490,8 @@
                     title: place.name
                 });
 
-                markers.push(marker);
+                //markers.push(marker);
+                defaultMarkers.push(marker);
 
                 // Add restaurant name to search results list
                 const resultItem = document.createElement('div');
@@ -508,16 +508,6 @@
                     showRestaurantDetails(place);
                 });
             });
-
-            // If there are more results, handle pagination
-            if (pagination && pagination.hasNextPage) {
-                const loadMoreButton = document.createElement('button');
-                loadMoreButton.innerText = "Load More";
-                loadMoreButton.onclick = () => {
-                    pagination.nextPage(); // Load the next set of results
-                };
-                resultContainer.appendChild(loadMoreButton);
-            }
         }
     }
 
@@ -559,6 +549,7 @@
         // Show detailed information in the info window
         function showRestaurantDetails(place) {
             document.getElementById('restaurant-name').innerText = place.name;
+
             let photoHTML = '';
             if (place.photos && place.photos.length > 0) {
                 // Fetch the first photo (you can loop through multiple photos if needed)
@@ -566,9 +557,26 @@
                 photoHTML = `<img src="${photoUrl}" alt="${place.name}" />`;
             }
 
+            const favoriteBtn = document.getElementById('favorite-btn');
+            const favoriteIcon = document.getElementById('favorite-icon');
+
+            let isFavorited = checkIfFavorited(place.place_id);
+
+            favoriteIcon.innerText = isFavorited ? 'favorite' : 'favorite_border';
+
+            favoriteBtn.onclick = function() {
+                if (isFavorited) {
+                    removeFavorite(place.place_id);
+                    favoriteIcon.innerText = 'favorite_border';
+                } else {
+                    addFavorite(place);
+                    favoriteIcon.innerText = 'favorite';
+                }
+                isFavorited = !isFavorited;
+            }
+
             document.getElementById('restaurant-details').innerHTML = `
                 ${photoHTML}
-                <button id="favorite-button">Favorite</button>
                 <p>Rating: ${place.rating || 'N/A'}</p>
                 <p>Address: ${place.vicinity}</p>
                 <p>Opening Hours: ${place.opening_hours ? (place.opening_hours.open_now ? 'Open Now' : 'Closed') : 'N/A'}</p>
@@ -576,59 +584,101 @@
             `;
 
             document.getElementById('info-window').style.display = 'block'; // Show info window
+
             const markerPosition = {
                 lat: place.geometry.location.lat(),
                 lng: place.geometry.location.lng()
             };
             map.setCenter(markerPosition);
             map.setZoom(16);
-
-            document.getElementById('favorite-button').addEventListener('click', function() {
-                addToFavorites(place);
-            })
         }
 
-        function addToFavorites(place) {
+        function addFavorite(place) {
+            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+            fetch('/add_favorite', {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': csrfToken,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    place_id: place.place_id,
+                    name: place.name,
+                    rating: place.rating,
+                    address: place.vicinity,
+                    latitude: place.geometry.location.lat(),
+                    longitude: place.geometry.location.lng(),
+                })
+            }).then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        alert('Restaurant added to favorites!');
+                    } else {
+                        alert('Error: ' + data.message)
+                    }
+                });
+        }
+
+        function removeFavorite(place_id) {
+            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+            fetch('/remove_favorite/', {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': csrfToken,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    place_id: place_id
+                })
+            }).then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        alert('Restaurant removed from favorites!');
+                    } else {
+                        alert('Error: ' + data.message);
+                    }
+                });
+        }
+
+        function checkIfFavorited(place_id) {
             let favorites = JSON.parse(localStorage.getItem('favorites')) || [];
-
-            // Check if restaurant is already in favorites
-            if (favorites.some(fav => fav.place_id === place.place_id)) {
-                alert('This restaurant is already in your favorites!');
-                return;
-            }
-
-            // Add restaurant to the favorites list
-            favorites.push({
-                name: place.name,
-                place_id: place.place_id,
-                rating: place.rating,
-                address: place.vicinity,
-            });
-
-            localStorage.setItem('favorites', JSON.stringify(favorites));
-            alert('Restaurant added to favorites!');
+            return favorites.some(fav => fav.place_id === place_id);
         }
-
-        document.getElementById('favorites-btn').addEventListener('click', function() {
-            showFavorites();
-        });
 
         function showFavorites() {
-            const favorites = JSON.parse(localStorage.getItem('favorites')) || [];
-            const resultsContainer = document.getElementById('results');
+            fetch('/get_favorites/', {
+                method: 'GET',
+                headers: {
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                }
+            }).then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        const favorites = data.favorites;
+                        const resultsContainer = document.getElementById('results');
+                        resultsContainer.innerHTML = '';
 
-            resultsContainer.innerHTML = ''; // Clear previous results
+                        favorites.forEach(fav => {
+                            const resultItem = document.createElement('div');
+                            resultItem.classList.add('result-item');
+                            resultItem.textContent = fav.name;
+                            resultItem.addEventListener('click', function () {
+                                showFavoriteDetails(fav);
+                            });
+                            resultsContainer.appendChild(resultItem);
 
-            favorites.forEach(fav => {
-                const resultItem = document.createElement('div');
-                resultItem.classList.add('result-item');
-                resultItem.textContent = fav.name;
-                resultItem.addEventListener('click', function () {
-                    showFavoriteDetails(fav);
+                            const marker = new google.maps.Markers({
+                                map: map,
+                                position: { lat: fav.latitude, lng: fav.longitude },
+                                title: fav.name
+                            });
+                        });
+                    } else {
+                        alert('Error fetching favorites');
+                    }
                 });
-
-            resultsContainer.appendChild(resultItem);
-            });
         }
 
         function showFavoriteDetails(fav) {
@@ -640,6 +690,10 @@
             `;
             document.getElementById('info-window').style.display = 'block';
         }
+
+        document.getElementById('favorites-btn').addEventListener('click', function() {
+            showFavorites();
+        });
 
 
         // Clear markers from the map
@@ -653,6 +707,24 @@
         document.getElementById('close-btn').onclick = function () {
             document.getElementById('info-window').style.display = 'none';
         };
+
+                document.addEventListener("DOMContentLoaded", function () {
+            const sidebar = document.querySelector(".sidebar");
+            const toggleBtn = document.querySelector("#btn");
+
+            toggleBtn.addEventListener("click", function () {
+                sidebar.classList.toggle("open");
+                menuBtnChange();
+            });
+
+            function menuBtnChange() {
+                if (sidebar.classList.contains("open")) {
+                    toggleBtn.textContent = "close";
+                } else {
+                    toggleBtn.textContent = "menu";
+                }
+            }
+        });
 </script>
 
     <div class="sidebar">
@@ -702,26 +774,6 @@
         </ul>
     </div>
 
-
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            const sidebar = document.querySelector(".sidebar");
-            const toggleBtn = document.querySelector("#btn");
-
-            toggleBtn.addEventListener("click", function () {
-                sidebar.classList.toggle("open");
-                menuBtnChange();
-            });
-
-            function menuBtnChange() {
-                if (sidebar.classList.contains("open")) {
-                    toggleBtn.textContent = "close";
-                } else {
-                    toggleBtn.textContent = "menu";
-                }
-            }
-        });
-        </script>
 
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDgFZC03jZ8-VLPhnewMrcDndXqD475ZOE&libraries=places&callback=initMap" async defer></script>
 
