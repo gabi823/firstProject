@@ -334,6 +334,10 @@
             width: 50px;
             background: none;
         }
+        .name_job{
+            padding-left: 30px;
+            font-weight: bold;
+        }
 
         .home-section {
             position: relative;
@@ -653,7 +657,7 @@
 
     <div class="sidebar">
         <div class="logo-details">
-            <div class="logo_name">{{ user.first_name }}</div>
+            <div class="logo_name">Welcome, {{ user.first_name }}</div>
             <i class='material-icons' id="btn">menu</i>
         </div>
         <ul class="nav-list">
@@ -662,7 +666,7 @@
                     <i class='material-icons'>pin_drop</i>
                     <span class="links_name">Map Dashboard</span>
                 </a>
-                <span class="tooltip">Frequent Favorites</span>
+                <span class="tooltip">Search</span>
             </li>
             <li>
                 <a href="{% url 'atlFoodFinder:profile_page' %}">
@@ -672,29 +676,28 @@
                 <span class="tooltip">User</span>
             </li>
             <li>
-                <a href="#" id="favorites-btn">
+                <a href="{% url 'atlFoodFinder:favorites' %}" id="favorites-btn">
                     <i class='material-icons'>favorite</i>
                     <span class="links_name">Favorites</span>
                 </a>
                 <span class="tooltip">Favorites</span>
             </li>
             <li>
-                <a href="{% url 'atlFoodFinder:profile_page' %}">
+                <a href="{% url 'atlFoodFinder:reviews' %}">
                     <i class='material-icons'>reviews</i>
                     <span class="links_name">Reviews</span>
                 </a>
                 <span class="tooltip">Reviews</span>
             </li>
             <li class="profile">
-                <a href="{% url 'atlFoodFinder:profile_page' %}">
+                <a href="{% url 'atlFoodFinder:logout_user' %}">
+                    <i class='material-icons' id="log_out">logout</i>
                 <div class="profile-details">
-                    <img src="./images/account.png" alt="profileImg">
                     <div class="name_job">
                         <div class="name">{{ user.first_name }}</div>
                     </div>
                 </div>
                 </a>
-                <i class='material-icons' id="log_out">logout</i>
             </li>
         </ul>
     </div>

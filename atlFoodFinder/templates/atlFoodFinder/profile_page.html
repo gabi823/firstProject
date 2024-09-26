@@ -301,7 +301,7 @@
 <body>
     <div class="sidebar">
         <div class="logo-details">
-            <div class="logo_name">{{ user.first_name }}</div>
+            <div class="logo_name">Welcome, {{ user.first_name }}</div>
             <i class='material-icons' id="btn">menu</i>
         </div>
         <ul class="nav-list">
@@ -310,7 +310,7 @@
                     <i class='material-icons'>pin_drop</i>
                     <span class="links_name">Map Dashboard</span>
                 </a>
-                <span class="tooltip">Frequent Favorites</span>
+                <span class="tooltip">Search</span>
             </li>
             <li>
                 <a href="{% url 'atlFoodFinder:profile_page' %}">
@@ -337,7 +337,6 @@
                 <a href="{% url 'atlFoodFinder:logout_user' %}">
                     <i class='material-icons' id="log_out">logout</i>
                 <div class="profile-details">
-
                     <div class="name_job">
                         <div class="name">{{ user.first_name }}</div>
                     </div>
