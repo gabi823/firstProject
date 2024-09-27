@@ -58,7 +58,7 @@
             position: absolute;
             top: 85px;
             left: 100px;
-            width: 300px;
+            width: 400px;
             max-height: 300px; /* Max height when expanded */
             overflow-y: auto;
             background-color: black;
@@ -94,7 +94,7 @@
             position: absolute;
             bottom: 15px;
             right: 15px;
-            width: 300px;
+            width: 400px;
             background-color: black;
             border: 1px solid #ccc;
             border-radius: 4px;
@@ -399,6 +399,10 @@
             color: white;
             margin-bottom: 10px;
         }
+
+        #address-text {
+            font-size: 11px;
+        }
     </style>
 </head>
 <body>
@@ -427,6 +431,7 @@
             <i class="material-icons" id="minimize-icon">expand_less</i>
         </button>
         <div id="results"></div>
+        <div id="address-text"></div>
     </div>
 
     <!-- Info window for restaurant details -->
@@ -507,7 +512,11 @@
                 // Add restaurant name to the default list
                 const resultItem = document.createElement('div');
                 resultItem.classList.add('result-item');
-                resultItem.textContent = place.name;
+                resultItem.innerHTML = `
+                    ${place.name}
+                    </br>
+                    <div id="address-text">${place.vicinity}<div>
+                `;
                 resultItem.addEventListener('click', function () {
                     showRestaurantDetails(place);
                 });
@@ -543,7 +552,10 @@
                 // Add restaurant name to search results list
                 const resultItem = document.createElement('div');
                 resultItem.classList.add('result-item');
-                resultItem.textContent = place.name;
+                resultItem.innerHTML = `
+                    ${place.name}
+                    <div id="address-text">${place.vicinity}<div>
+                `;
                 resultItem.addEventListener('click', function () {
                     showRestaurantDetails(place);
                 });
