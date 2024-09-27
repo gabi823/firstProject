@@ -129,7 +129,7 @@
             margin: 5px 0;
         }
 
-        #favorite-button {
+        #favorite-button, #show-reviews-button {
             padding: 5px;
         }
 
@@ -361,6 +361,48 @@
             font-weight: 500;
             margin: 18px;
         }
+
+        .popup {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.4); /* Black background with opacity */
+        }
+
+
+        .popup-content {
+            background-color: black;
+            color: white;
+            margin: 15% auto; /* Center the popup */
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 600px;
+            max-height: 70%;
+            overflow-y: auto;
+            box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.5);
+        }
+        .close-btn {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .reviews-scrollable {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        #reviews-content {
+            color: white;
+            margin-bottom: 10px;
+        }
     </style>
 </head>
 <body>
@@ -397,6 +439,15 @@
         <h3 id="restaurant-name"></h3>
         <div id="restaurant-details">
             <!-- Placeholder for dynamic content -->
+        </div>
+    </div>
+
+    <!-- Reviews Popup -->
+    <div id="reviews-popup" class="popup">
+        <div class="popup-content">
+            <span id="close-reviews" class="close-btn">&times;</span>
+            <h4>Reviews:</h4>
+            <div id="reviews-content" class="reviews-scrollable"></div>
         </div>
     </div>
 
@@ -557,36 +608,85 @@
         }
 
         // Show detailed information in the info window
-        function showRestaurantDetails(place) {
-            document.getElementById('restaurant-name').innerText = place.name;
+function showRestaurantDetails(place) {
+    const request = {
+        placeId: place.place_id,
+        fields: ['name', 'rating', 'formatted_phone_number', 'vicinity', 'opening_hours', 'photos', 'reviews', 'place_id', 'geometry'] // Specify required fields
+    };
+
+    service.getDetails(request, (details, status) => {
+        if (status === google.maps.places.PlacesServiceStatus.OK) {
+            // Display restaurant name, photo, and other details
+            document.getElementById('restaurant-name').innerText = details.name;
             let photoHTML = '';
-            if (place.photos && place.photos.length > 0) {
-                // Fetch the first photo (you can loop through multiple photos if needed)
-                const photoUrl = place.photos[0].getUrl({ maxWidth: 300, maxHeight: 200 });
-                photoHTML = `<img src="${photoUrl}" alt="${place.name}" />`;
+            if (details.photos && details.photos.length > 0) {
+                const photoUrl = details.photos[0].getUrl({ maxWidth: 300, maxHeight: 200 });
+                photoHTML = `<img src="${photoUrl}" alt="${details.name}" />`;
             }
+
+            let phoneHTML = details.formatted_phone_number ? details.formatted_phone_number : 'N/A';
 
             document.getElementById('restaurant-details').innerHTML = `
                 ${photoHTML}
                 <button id="favorite-button">Favorite</button>
-                <p>Rating: ${place.rating || 'N/A'}</p>
-                <p>Address: ${place.vicinity}</p>
-                <p>Opening Hours: ${place.opening_hours ? (place.opening_hours.open_now ? 'Open Now' : 'Closed') : 'N/A'}</p>
-                <a href="https://www.google.com/maps/place/?q=place_id:${place.place_id}" target="_blank" id="restaurant-details">View on Google Maps</a>
+                <br>
+                <button id="show-reviews-button">Show Reviews</button>
+                <p>Rating: ${details.rating || 'N/A'}</p>
+                <p>Address: ${details.vicinity}</p>
+                <p>Phone: ${phoneHTML}</p>
+                <p>Opening Hours: ${details.opening_hours ? (details.opening_hours.open_now ? 'Open Now' : 'Closed') : 'N/A'}</p>
+                <a href="https://www.google.com/maps/place/?q=place_id:${details.place_id}" target="_blank">View on Google Maps</a>
             `;
 
             document.getElementById('info-window').style.display = 'block'; // Show info window
-            const markerPosition = {
-                lat: place.geometry.location.lat(),
-                lng: place.geometry.location.lng()
-            };
-            map.setCenter(markerPosition);
+            map.setCenter(details.geometry.location);
             map.setZoom(16);
 
+            // Add to favorites button
             document.getElementById('favorite-button').addEventListener('click', function() {
-                addToFavorites(place);
-            })
+                addToFavorites(details);
+            });
+
+            // Show reviews in a separate popup
+            document.getElementById('show-reviews-button').addEventListener('click', function() {
+                let reviewsHTML = '';
+                if (details.reviews && details.reviews.length > 0) {
+                    details.reviews.forEach(review => {
+                        reviewsHTML += `
+                            <div class="review">
+                                <br>
+                                <p><strong>${review.author_name}</strong> (${review.rating} stars):</p>
+                                <p>${review.text}</p>
+                                <br>
+                            </div>
+                            <hr>
+                        `;
+                    });
+                } else {
+                    reviewsHTML = `<p>No reviews available.</p>`;
+                }
+
+                document.getElementById('reviews-content').innerHTML = reviewsHTML;
+                document.getElementById('reviews-popup').style.display = 'block'; // Show reviews popup
+            });
+
+            // Close the info window
+            document.getElementById('close-btn').onclick = function () {
+                document.getElementById('info-window').style.display = 'none';
+            };
+
+            // Close reviews popup
+            document.getElementById('close-reviews').onclick = function () {
+                document.getElementById('reviews-popup').style.display = 'none';
+            };
+
+        } else {
+            console.error('Place details request failed due to:', status);
         }
+    });
+}
+
+
 
         function addToFavorites(place) {
             let favorites = JSON.parse(localStorage.getItem('favorites')) || [];
@@ -648,11 +748,6 @@
                 markersArray[i].setMap(null);
             }
         }
-
-        // Close the info window
-        document.getElementById('close-btn').onclick = function () {
-            document.getElementById('info-window').style.display = 'none';
-        };
 </script>
 
     <div class="sidebar">
