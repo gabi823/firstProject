@@ -478,7 +478,6 @@
     // Handle search results and display markers and list, supporting pagination
     function handleSearchResults(results, status, pagination) {
         if (status === google.maps.places.PlacesServiceStatus.OK) {
-            // document.getElementById('results').style.display = 'block';
             const resultContainer = document.getElementById('results');
             resultContainer.innerHTML = ''; // Clear previous results
 
@@ -490,7 +489,6 @@
                     title: place.name
                 });
 
-                //markers.push(marker);
                 defaultMarkers.push(marker);
 
                 // Add restaurant name to search results list
