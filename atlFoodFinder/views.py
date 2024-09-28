@@ -1,3 +1,5 @@
+import json
+
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import User
@@ -8,10 +10,70 @@ from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib import messages
 from django.contrib.auth import logout
 from django import forms
-from django.http import JsonResponse
+from .models import FavoriteRestaurant
+from .models import Favorite
+
 
 
 # Create your views here.
+
+@login_required
+def add_favorite(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        place_id = data.get('place_id')
+        name = data.get('name')
+        rating = data.get('rating')
+        address = data.get('address')
+        latitude = data.get('latitude')
+        longitude = data.get('longitude')
+
+        # Check if the restaurant is already favorited by the user
+        if FavoriteRestaurant.objects.filter(user=request.user, place_id=place_id).exists():
+            return JsonResponse({'status': 'error', 'message': 'This restaurant is already in your favorites.'})
+
+        # Add the restaurant to the user's favorites
+        favorite = FavoriteRestaurant(
+            user=request.user,
+            name=name,
+            place_id=place_id,
+            rating=rating,
+            address=address,
+            latitude=latitude,
+            longitude=longitude
+        )
+        favorite.save()
+
+        return JsonResponse({'status': 'success', 'message': 'Restaurant has been added to favorites.'})
+
+    return JsonResponse({'status': 'error', 'message': 'Invalid request method.'})
+
+@login_required
+def remove_favorite(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        place_id = data.get('place_id')
+
+        FavoriteRestaurant.objects.filter(user=request.user, place_id=place_id).delete()
+
+        return JsonResponse({'status': 'success', 'message': 'Restaurant has been removed from favorites.'})
+
+    return JsonResponse({'status': 'error', 'message': 'Invalid request method.'})
+
+@login_required
+def get_favorites(request):
+    favorites = FavoriteRestaurant.objects.filter(user=request.user)
+    favorite_list = []
+    for favorite in favorites:
+        favorite_list.append({
+            'name': favorite.name,
+            'place_id': favorite.place_id,
+            'rating': favorite.rating,
+            'address': favorite.address,
+            'latitude': favorite.latitude,
+            'longitude': favorite.longitude
+        })
+    return JsonResponse({'status': 'success', 'favorites': favorite_list})
 
 class CustomPasswordChangeForm(forms.Form):
     new_password1 = forms.CharField(label="New Password", widget=forms.PasswordInput)
@@ -79,8 +141,11 @@ def create_account(request):
 
     return render(request, 'atlFoodFinder/create_account.html')
 
+@login_required
 def favorites(request):
-    return render(request, 'atlFoodFinder/favorites.html')
+    # Get all favorite restaurants for the current user
+    favorites = Favorite.objects.filter(user=request.user)
+    return render(request, 'atlFoodFinder/show_map.html', {'favorites': favorites})
 
 @login_required
 def show_map(request):
