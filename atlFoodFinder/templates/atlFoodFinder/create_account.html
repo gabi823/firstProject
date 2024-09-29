@@ -81,13 +81,13 @@
                 '<input type="text" name="last_name" class="form-input" placeholder="Last Name" required><br>' +
                 '<input type="text" name="username" class="form-input" placeholder="Username" required><br>' +
                 '<input type="password" name="password" class="form-input" placeholder="Password" required><br>' +
-                <ul id="password-requirements">
-                    <li id="min-length">At least 8 characters</li>
-                    <li id="number-required">At least 1 number</li>
-                    <li id="special-required">At least 1 special character</li>
-                </ul>
-                '<button type="submit" class="create-account-btn">Create Account</button>' +
-                '</form>';
+                '</form>' +
+                '<ul id="password-requirements">'+
+                '<li id="min-length">At least 8 characters</li>'+
+                '<li id="number-required">At least 1 number</li>'+
+                '<li id="special-required">At least 1 special character</li>'+
+                '</ul>'+
+                '<button type="submit" class="create-account-btn">Create Account</button>';
 
             window.onload = function() {
                 createPopup(createAccountHTML);
