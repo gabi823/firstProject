@@ -23,7 +23,7 @@
         #search-container {
             position: absolute;
             top: 20px;
-            left: 100px; /* Adjust this to ensure it sits next to your sidebar */
+            left: 100px;
             z-index: 5;
             display: flex;
             gap: 10px;
@@ -129,15 +129,8 @@
             margin: 5px 0;
         }
 
-        #favorite-button, #show-reviews-button {
+        #favorite-button {
             padding: 5px;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: "Rethink Sans", sans-serif;
         }
 
         .sidebar {
@@ -460,7 +453,6 @@
     let map, service, markers = [], defaultMarkers = [];
 
     function initMap() {
-        // Initialize the map centered at user's location
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition((position) => {
                 const userLocation = {
@@ -473,38 +465,32 @@
                     zoom: 13
                 });
 
-                // Fetch default restaurants within 5 miles
-                    fetchRestaurants(userLocation, 8046); // 5 miles in meters
+                fetchRestaurants(userLocation, 8046);
 
-                    // Add event listener for search button
-                    document.getElementById('search-button').addEventListener('click', searchRestaurants);
-                });
+                document.getElementById('search-button').addEventListener('click', searchRestaurants);
+            });
         }
     }
 
     function fetchRestaurants(location, radius, keyword = "") {
-            const request = {
-                location: location,
-                radius: radius,
-                type: [
-                    'restaurant',
-                ],
-                keyword: keyword
-            };
+        const request = {
+            location: location,
+            radius: radius,
+            type: ['restaurant'],
+            keyword: keyword
+        };
 
         service = new google.maps.places.PlacesService(map);
         service.nearbySearch(request, handleDefaultResults);
     }
 
-    // Display default markers and populate restaurant list for default search (5-mile radius)
     function handleDefaultResults(results, status) {
         if (status === google.maps.places.PlacesServiceStatus.OK) {
             document.getElementById('results').style.display = 'block';
             const resultContainer = document.getElementById('results');
-            resultContainer.innerHTML = ''; // Clear previous results
+            resultContainer.innerHTML = '';
 
             results.forEach((place) => {
-                // Create markers for each place
                 const marker = new google.maps.Marker({
                     map: map,
                     position: place.geometry.location,
@@ -513,7 +499,6 @@
 
                 defaultMarkers.push(marker);
 
-                // Add restaurant name to the default list
                 const resultItem = document.createElement('div');
                 resultItem.classList.add('result-item');
                 resultItem.innerHTML = `
@@ -526,7 +511,6 @@
 
                 resultContainer.appendChild(resultItem);
 
-                // Marker click event to show restaurant details
                 google.maps.event.addListener(marker, 'click', function () {
                     showRestaurantDetails(place);
                 });
@@ -534,231 +518,209 @@
         }
     }
 
+    function searchRestaurants() {
+        clearMarkers(defaultMarkers);
+        clearMarkers(markers);
+        markers = [];
 
-    // Handle search results and display markers and list, supporting pagination
-    function handleSearchResults(results, status, pagination) {
-        if (status === google.maps.places.PlacesServiceStatus.OK) {
-            document.getElementById('results').style.display = 'block';
-            const resultContainer = document.getElementById('results');
-            resultContainer.innerHTML = ''; // Clear previous results
+        const searchQuery = document.getElementById('search-bar').value;
+        const distance = parseInt(document.getElementById('distance-filter').value) * 1609;
+        const minRating = document.getElementById('rating-filter').value;
 
-            results.forEach((place) => {
-                // Create markers for each place
-                const marker = new google.maps.Marker({
-                    map: map,
-                    position: place.geometry.location,
-                    title: place.name
-                });
-
-                markers.push(marker);
-
-                // Add restaurant name to search results list
-                const resultItem = document.createElement('div');
-                resultItem.classList.add('result-item');
-                resultItem.innerHTML = `
-                    ${place.name}
-                    <div id="address-text">${place.vicinity}<div>
-                `;
-                resultItem.addEventListener('click', function () {
-                    showRestaurantDetails(place);
-                });
-
-                resultContainer.appendChild(resultItem);
-
-                // Marker click event to show restaurant details
-                google.maps.event.addListener(marker, 'click', function () {
-                    showRestaurantDetails(place);
-                });
-            });
-
-            // If there are more results, handle pagination
-            if (pagination && pagination.hasNextPage) {
-                const loadMoreButton = document.createElement('button');
-                loadMoreButton.innerText = "Load More";
-                loadMoreButton.onclick = () => {
-                    pagination.nextPage(); // Load the next set of results
-                };
-                resultContainer.appendChild(loadMoreButton);
-            }
+        if (distance > 80467) {
+            alert("Please enter a distance under 50 miles.");
+            return;
         }
+
+        fetchRestaurants(map.getCenter(), distance, searchQuery);
     }
 
-        // Toggle minimize/maximize for search results
-        document.getElementById('minimize-btn').addEventListener('click', function() {
-            const resultsContainer = document.getElementById('results-container');
-            const minimizeIcon = document.getElementById('minimize-icon');
+    function showRestaurantDetails(place) {
+        const request = {
+            placeId: place.place_id,
+            fields: ['name', 'rating', 'formatted_phone_number', 'vicinity', 'opening_hours', 'photos', 'reviews', 'place_id', 'geometry']
+        };
 
-            if (resultsContainer.style.maxHeight === '0px') {
-                resultsContainer.style.maxHeight = '300px';  // Expand the list
-                minimizeIcon.textContent = 'expand_less';
-            } else {
-                resultsContainer.style.maxHeight = '0px';  // Minimize the list
-                minimizeIcon.textContent = 'expand_more';
-            }
-        });
-
-        // Search restaurants and display results
-        function searchRestaurants() {
-            // Clear previous markers
-            clearMarkers(defaultMarkers);
-            clearMarkers(markers);
-            markers = [];
-
-            const searchQuery = document.getElementById('search-bar').value;
-            const distance = parseInt(document.getElementById('distance-filter').value) * 1609; // Convert miles to meters
-            const minRating = document.getElementById('rating-filter').value;
-
-            // Limit distance to within 50 miles radius
-            if (distance > 80467) { // 50 miles
-                alert("Please enter a distance under 50 miles.");
-                return;
-            }
-
-            // Fetch restaurants based on search query and filters
-            fetchRestaurants(map.getCenter(), distance, searchQuery);
-        }
-
-        // Show detailed information in the info window
-function showRestaurantDetails(place) {
-    const request = {
-        placeId: place.place_id,
-        fields: ['name', 'rating', 'formatted_phone_number', 'vicinity', 'opening_hours', 'photos', 'reviews', 'place_id', 'geometry', 'types']
-    };
-
-    service.getDetails(request, (details, status) => {
-        if (status === google.maps.places.PlacesServiceStatus.OK) {
-            // Display restaurant name, photo, and other details
-            document.getElementById('restaurant-name').innerText = details.name;
-            let photoHTML = '';
-            if (details.photos && details.photos.length > 0) {
-                const photoUrl = details.photos[0].getUrl({ maxWidth: 300, maxHeight: 200 });
-                photoHTML = `<img src="${photoUrl}" alt="${details.name}" />`;
-            }
-
-            let phoneHTML = details.formatted_phone_number ? details.formatted_phone_number : 'N/A';
-
-            document.getElementById('restaurant-details').innerHTML = `
-                ${photoHTML}
-                <button id="favorite-button">Favorite</button>
-                <br>
-                <button id="show-reviews-button">Show Reviews</button>
-                <p>Rating: ${details.rating || 'N/A'}</p>
-                <p>Address: ${details.vicinity}</p>
-                <p>Phone: ${phoneHTML}</p>
-                <p>Opening Hours: ${details.opening_hours ? (details.opening_hours.open_now ? 'Open Now' : 'Closed') : 'N/A'}</p>
-                <a href="https://www.google.com/maps/place/?q=place_id:${details.place_id}" target="_blank">View on Google Maps</a>
-            `;
-
-            document.getElementById('info-window').style.display = 'block'; // Show info window
-            map.setCenter(details.geometry.location);
-            map.setZoom(16);
-
-            // Add to favorites button
-            document.getElementById('favorite-button').addEventListener('click', function() {
-                addToFavorites(details);
-            });
-
-            // Show reviews in a separate popup
-            document.getElementById('show-reviews-button').addEventListener('click', function() {
-                let reviewsHTML = '';
-                if (details.reviews && details.reviews.length > 0) {
-                    details.reviews.forEach(review => {
-                        reviewsHTML += `
-                            <div class="review">
-                                <br>
-                                <p><strong>${review.author_name}</strong> (${review.rating} stars):</p>
-                                <p>${review.text}</p>
-                                <br>
-                            </div>
-                            <hr>
-                        `;
-                    });
-                } else {
-                    reviewsHTML = `<p>No reviews available.</p>`;
+        service.getDetails(request, (details, status) => {
+            if (status === google.maps.places.PlacesServiceStatus.OK) {
+                document.getElementById('restaurant-name').innerText = details.name;
+                let photoHTML = '';
+                if (details.photos && details.photos.length > 0) {
+                    const photoUrl = details.photos[0].getUrl({ maxWidth: 300, maxHeight: 200 });
+                    photoHTML = `<img src="${photoUrl}" alt="${details.name}" />`;
                 }
 
-                document.getElementById('reviews-content').innerHTML = reviewsHTML;
-                document.getElementById('reviews-popup').style.display = 'block'; // Show reviews popup
-            });
+                let phoneHTML = details.formatted_phone_number ? details.formatted_phone_number : 'N/A';
 
-            // Close the info window
-            document.getElementById('close-btn').onclick = function () {
-                document.getElementById('info-window').style.display = 'none';
-            };
+                document.getElementById('restaurant-details').innerHTML = `
+                    ${photoHTML}
+                    <button id="favorite-button">Favorite</button>
+                    <br>
+                    <button id="show-reviews-button">Show Reviews</button>
+                    <p>Rating: ${details.rating || 'N/A'}</p>
+                    <p>Address: ${details.vicinity}</p>
+                    <p>Phone: ${phoneHTML}</p>
+                    <p>Opening Hours: ${details.opening_hours ? (details.opening_hours.open_now ? 'Open Now' : 'Closed') : 'N/A'}</p>
+                    <a href="https://www.google.com/maps/place/?q=place_id:${details.place_id}" target="_blank">View on Google Maps</a>
+                `;
 
-            // Close reviews popup
-            document.getElementById('close-reviews').onclick = function () {
-                document.getElementById('reviews-popup').style.display = 'none';
-            };
+                document.getElementById('info-window').style.display = 'block';
+                map.setCenter(details.geometry.location);
+                map.setZoom(16);
 
-        } else {
-            console.error('Place details request failed due to:', status);
-        }
-    });
-}
-
-
-
-        function addToFavorites(place) {
-            let favorites = JSON.parse(localStorage.getItem('favorites')) || [];
-
-            // Check if restaurant is already in favorites
-            if (favorites.some(fav => fav.place_id === place.place_id)) {
-                alert('This restaurant is already in your favorites!');
-                return;
-            }
-
-            // Add restaurant to the favorites list
-            favorites.push({
-                name: place.name,
-                place_id: place.place_id,
-                rating: place.rating,
-                address: place.vicinity,
-            });
-
-            localStorage.setItem('favorites', JSON.stringify(favorites));
-            alert('Restaurant added to favorites!');
-        }
-
-        document.getElementById('favorites-btn').addEventListener('click', function() {
-            showFavorites();
-        });
-
-        function showFavorites() {
-            const favorites = JSON.parse(localStorage.getItem('favorites')) || [];
-            const resultsContainer = document.getElementById('results');
-
-            resultsContainer.innerHTML = ''; // Clear previous results
-
-            favorites.forEach(fav => {
-                const resultItem = document.createElement('div');
-                resultItem.classList.add('result-item');
-                resultItem.textContent = fav.name;
-                resultItem.addEventListener('click', function () {
-                    showFavoriteDetails(fav);
+                document.getElementById('favorite-button').addEventListener('click', function() {
+                    addToFavorites(details);
                 });
 
-            resultsContainer.appendChild(resultItem);
-            });
-        }
+                document.getElementById('show-reviews-button').addEventListener('click', function() {
+                    let reviewsHTML = '';
+                    if (details.reviews && details.reviews.length > 0) {
+                        details.reviews.forEach(review => {
+                            reviewsHTML += `
+                                <div class="review">
+                                    <br>
+                                    <p><strong>${review.author_name}</strong> (${review.rating} stars):</p>
+                                    <p>${review.text}</p>
+                                    <br>
+                                </div>
+                                <hr>
+                            `;
+                        });
+                    } else {
+                        reviewsHTML = `<p>No reviews available.</p>`;
+                    }
 
-        function showFavoriteDetails(fav) {
-            document.getElementById('restaurant-name').innerText = fav.name;
-            document.getElementById('restaurant-details').innerHTML = `
-                <p>Rating: ${fav.rating || 'N/A'}</p>
-                <p>Address: ${fav.address}</p>
-                <a href="https://www.google.com/maps/place/?q=place_id:${fav.place_id}" target="_blank">View on Google Maps</a>
-            `;
-            document.getElementById('info-window').style.display = 'block';
-        }
+                    document.getElementById('reviews-content').innerHTML = reviewsHTML;
+                    document.getElementById('reviews-popup').style.display = 'block';
+                });
 
+                document.getElementById('close-btn').onclick = function () {
+                    document.getElementById('info-window').style.display = 'none';
+                };
 
-        // Clear markers from the map
-        function clearMarkers(markersArray) {
-            for (let i = 0; i < markersArray.length; i++) {
-                markersArray[i].setMap(null);
+                document.getElementById('close-reviews').onclick = function () {
+                    document.getElementById('reviews-popup').style.display = 'none';
+                };
+
+            } else {
+                console.error('Place details request failed due to:', status);
             }
+        });
+    }
+
+    function addFavorite(place) {
+        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+        fetch('/add_favorite/', {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': csrfToken,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                place_id: place.place_id,
+                name: place.name,
+                rating: place.rating,
+                address: place.vicinity,
+                latitude: place.geometry.location.lat(),
+                longitude: place.geometry.location.lng(),
+            })
+        }).then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    alert('Restaurant added to favorites!');
+                } else {
+                    alert('Error: ' + data.message);
+                }
+            });
+    }
+
+    function removeFavorite(place_id) {
+        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+        fetch('/remove_favorite/', {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': csrfToken,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                place_id: place_id
+            })
+        }).then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    alert('Restaurant removed from favorites!');
+                } else {
+                    alert('Error: ' + data.message);
+                }
+            });
+    }
+
+    function showFavorites() {
+        fetch('/get_favorites/', {
+            method: 'GET',
+            headers: {
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+            }
+        }).then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    const favorites = data.favorites;
+                    const resultsContainer = document.getElementById('results');
+                    resultsContainer.innerHTML = '';
+
+                    clearMarkers(markers);
+                    markers = [];
+
+                    favorites.forEach(fav => {
+                        const resultItem = document.createElement('div');
+                        resultItem.classList.add('result-item');
+                        resultItem.textContent = fav.name;
+                        resultItem.addEventListener('click', function () {
+                            showFavoriteDetails(fav);
+                        });
+                        resultsContainer.appendChild(resultItem);
+
+                        const marker = new google.maps.Marker({
+                            map: map,
+                            position: { lat: fav.latitude, lng: fav.longitude },
+                            title: fav.name
+                        });
+
+                        markers.push(marker);
+                    });
+                } else {
+                    alert('Error fetching favorites');
+                }
+            });
+    }
+
+    function showFavoriteDetails(fav) {
+        document.getElementById('restaurant-name').innerText = fav.name;
+        document.getElementById('restaurant-details').innerHTML = `
+            <p>Rating: ${fav.rating || 'N/A'}</p>
+            <p>Address: ${fav.address}</p>
+            <a href="https://www.google.com/maps/place/?q=place_id:${fav.place_id}" target="_blank">View on Google Maps</a>
+        `;
+        document.getElementById('info-window').style.display = 'block';
+    }
+
+    function clearMarkers(markersArray) {
+        for (let i = 0; i < markersArray.length; i++) {
+            markersArray[i].setMap(null);
         }
+    }
+
+    document.getElementById('favorites-btn').addEventListener('click', function() {
+        showFavorites();  // Trigger the AJAX request to fetch and display favorites
+    });
+
+    // Initialize the map after the DOM content has been loaded
+    document.addEventListener("DOMContentLoaded", function() {
+        initMap();
+    });
+
 </script>
 
     <div class="sidebar">
@@ -807,27 +769,6 @@ function showRestaurantDetails(place) {
             </li>
         </ul>
     </div>
-
-
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            const sidebar = document.querySelector(".sidebar");
-            const toggleBtn = document.querySelector("#btn");
-
-            toggleBtn.addEventListener("click", function () {
-                sidebar.classList.toggle("open");
-                menuBtnChange();
-            });
-
-            function menuBtnChange() {
-                if (sidebar.classList.contains("open")) {
-                    toggleBtn.textContent = "close";
-                } else {
-                    toggleBtn.textContent = "menu";
-                }
-            }
-        });
-        </script>
 
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDgFZC03jZ8-VLPhnewMrcDndXqD475ZOE&libraries=places&callback=initMap" async defer></script>
 
