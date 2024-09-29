@@ -619,13 +619,13 @@
 function showRestaurantDetails(place) {
     const request = {
         placeId: place.place_id,
-        fields: ['name', 'rating', 'formatted_phone_number', 'vicinity', 'opening_hours', 'photos', 'reviews', 'place_id', 'geometry'] // Specify required fields
+        fields: ['name', 'rating', 'formatted_phone_number', 'vicinity', 'opening_hours', 'photos', 'reviews', 'place_id', 'geometry', 'types'] // Specify required fields
     };
 
     service.getDetails(request, (details, status) => {
         if (status === google.maps.places.PlacesServiceStatus.OK) {
-            // Display restaurant name, photo, and other details
             document.getElementById('restaurant-name').innerText = details.name;
+
             let photoHTML = '';
             if (details.photos && details.photos.length > 0) {
                 const photoUrl = details.photos[0].getUrl({ maxWidth: 300, maxHeight: 200 });
@@ -633,6 +633,7 @@ function showRestaurantDetails(place) {
             }
 
             let phoneHTML = details.formatted_phone_number ? details.formatted_phone_number : 'N/A';
+
 
             document.getElementById('restaurant-details').innerHTML = `
                 ${photoHTML}
