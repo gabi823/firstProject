@@ -144,7 +144,7 @@ def create_account(request):
 @login_required
 def favorites(request):
     # Get all favorite restaurants for the current user
-    favorites = Favorite.objects.filter(user=request.user)
+    favorites = FavoriteRestaurant.objects.filter(user=request.user)
     return render(request, 'atlFoodFinder/show_map.html', {'favorites': favorites})
 
 @login_required
