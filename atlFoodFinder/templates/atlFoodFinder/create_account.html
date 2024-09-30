@@ -137,6 +137,18 @@
 
     </script>
 
+<div id="map"></div>
+<script>
+    function initMap() {
+        const options = {
+            zoom: 12,
+            center: { lat: 33.748783, lng: -84.388168 },
+        };
+        const map = new google.maps.Map(document.getElementById('map'), options);
+
+    }
+</script>
+
 <script>
     function submitCreateAccount(event) {
         event.preventDefault();
@@ -172,17 +184,6 @@
     }
 </script>
 
-    <div id="map"></div>
-<script>
-    function initMap() {
-        const options = {
-            zoom: 12,
-            center: { lat: 33.748783, lng: -84.388168 },
-        };
-        const map = new google.maps.Map(document.getElementById('map'), options);
-
-    }
-</script>
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDgFZC03jZ8-VLPhnewMrcDndXqD475ZOE&callback=initMap" async defer></script>
 
 </body>
