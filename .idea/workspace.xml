@@ -9,10 +9,7 @@
       <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/atlFoodFinder/templates/atlFoodFinder/create_account.html" beforeDir="false" afterPath="$PROJECT_DIR$/atlFoodFinder/templates/atlFoodFinder/create_account.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/atlFoodFinder/templates/atlFoodFinder/show_map.html" beforeDir="false" afterPath="$PROJECT_DIR$/atlFoodFinder/templates/atlFoodFinder/show_map.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/atlFoodFinder/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/atlFoodFinder/views.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/db.sqlite3" beforeDir="false" afterPath="$PROJECT_DIR$/db.sqlite3" afterDir="false" />
-
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -77,8 +74,8 @@
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.pycharm.django.structure.promotion.once.per.project": "true",
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "git-widget-placeholder": "favoritesEdits",
-    "last_opened_file_path": "/Users/gabilong/favoritesEdits",
+    "git-widget-placeholder": "FavoritesFive",
+    "last_opened_file_path": "/Users/mayazhang/FavoritesFive",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -183,7 +180,7 @@
       <workItem from="1727584728499" duration="376000" />
       <workItem from="1727585402638" duration="568000" />
       <workItem from="1727638714996" duration="15004000" />
-      <workItem from="1727724797582" duration="5150000" />
+      <workItem from="1727725118629" duration="4915000" />
     </task>
     <task id="LOCAL-00001" summary="Initializing project files">
       <option name="closed" value="true" />
