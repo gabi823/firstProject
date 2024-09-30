@@ -12,9 +12,6 @@ from django.contrib.auth import logout
 from django import forms
 from .models import FavoriteRestaurant
 
-
-
-
 # Create your views here.
 
 @login_required
@@ -62,18 +59,10 @@ def remove_favorite(request):
 
 @login_required
 def get_favorites(request):
-    favorites = FavoriteRestaurant.objects.filter(user=request.user)
-    favorite_list = []
-    for favorite in favorites:
-        favorite_list.append({
-            'name': favorite.name,
-            'place_id': favorite.place_id,
-            'rating': favorite.rating,
-            'address': favorite.address,
-            'latitude': favorite.latitude,
-            'longitude': favorite.longitude
-        })
-    return JsonResponse({'status': 'success', 'favorites': favorite_list})
+    favorites = FavoriteRestaurant.objects.filter(user=request.user).values(
+        'place_id', 'name', 'rating', 'address', 'latitude', 'longitude'
+    )
+    return JsonResponse({'status': 'success', 'favorites': list(favorites)})
 
 class CustomPasswordChangeForm(forms.Form):
     new_password1 = forms.CharField(label="New Password", widget=forms.PasswordInput)
@@ -158,13 +147,13 @@ def login_user(request):
     if request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('password')
-        print(f"Username: {username}, Password: {password}")
+        # print(f"Username: {username}, Password: {password}")
 
         # Authenticate the user
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
-            print(f'User {username} authenticated successfully')
+            # print(f'User {username} authenticated successfully')
             return JsonResponse({'status': 'success', 'redirect_url': '/show_map/'})
         else:
             print("Invalid credentials")
