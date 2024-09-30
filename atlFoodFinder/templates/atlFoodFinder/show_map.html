@@ -26,19 +26,23 @@
             left: 100px;
             z-index: 5;
             display: flex;
-            gap: 10px;
+            gap: 15px;
             align-items: center;
             background-color: black;
             padding: 10px;
-            border-radius: 5px;
+            border-radius: 8px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
         }
 
-        #search-bar {
-            width: 200px;
-            padding: 5px;
+        .sidebar.open ~ #search-container {
+            left: 260px; /* Adjust position when sidebar is open */
+        }
+
+        #search-bar, #distance-filter, #rating-filter {
+            padding: 8px;
             border-radius: 4px;
             border: 1px solid #ccc;
+            font-size: 14px;
         }
 
         #search-item {
@@ -46,7 +50,16 @@
         }
 
         #search-button {
-            padding: 5px;
+            padding: 8px 12px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        #search-button:hover {
+            background-color: #0056b3;
         }
 
         #filters {
@@ -62,10 +75,25 @@
             max-height: 300px; /* Max height when expanded */
             overflow-y: auto;
             background-color: black;
-            padding: 10px;
-            border-radius: 5px;
+            padding: 15px 20px;
+            border-radius: 8px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-            transition: max-height 0.5s ease-in-out; /* Smooth transition */
+            transition: max-height 0.5s ease-in-out, padding 0.5s ease-in-out, left 0.5s ease; /* Smooth transition */
+        }
+
+        #results-container.minimized {
+            max-height: 48px; /* Adjust this based on your needs */
+            padding: 15px 20px 35px; /* Adjusted padding to make space below */
+            overflow: hidden;
+            justify-content: space-between; /* Aligns text and button */
+            align-items: center; /* Centers the content vertically */
+        }
+
+        #results-label {
+            color: white;
+            font-weight: bold;
+            margin-bottom: 0; /* Remove any extra margins */
+            white-space: nowrap;
         }
 
         #favorites-container {
@@ -95,6 +123,11 @@
             border: none;
             cursor: pointer;
             color: white;
+            z-index: 10;
+        }
+
+        #minimize-btn i {
+            font-size: 24px;
         }
 
         #results {
@@ -148,8 +181,19 @@
             margin: 5px 0;
         }
 
-        #favorite-button {
+        #favorite-button, #show-reviews-button {
             padding: 5px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Rethink Sans", sans-serif;
+        }
+
+        .sidebar.open ~ #results-container {
+            left: 260px; /* Adjust the left position for the results when sidebar is open */
         }
 
         .sidebar {
@@ -443,6 +487,7 @@
 
     <!-- Restaurant results -->
     <div id="results-container">
+        <div id="results-label">Results...</div>
         <button id="minimize-btn">
             <i class="material-icons" id="minimize-icon">expand_less</i>
         </button>
@@ -524,11 +569,12 @@
 
 <script>
     let map, service, markers = [], defaultMarkers = [];
+    let userLocation = null;
 
     function initMap() {
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition((position) => {
-                const userLocation = {
+                userLocation = {
                     lat: position.coords.latitude,
                     lng: position.coords.longitude
                 };
@@ -538,10 +584,19 @@
                     zoom: 13
                 });
 
-                fetchRestaurants(userLocation, 8046);
+
+                fetchRestaurants(userLocation, 8046); // 5 miles in meters
 
                 document.getElementById('search-button').addEventListener('click', searchRestaurants);
-            });
+                });
+
+                document.getElementById('search-bar').addEventListener('keypress', function(event) {
+                    if (event.key === 'Enter') {
+                        searchRestaurants();
+                    }
+                });
+        } else {
+            alert("Geolocation is not supported by this browser.");
         }
     }
 
@@ -591,6 +646,72 @@
         }
     }
 
+        function handleSearchResults(results, status, pagination) {
+        if (status === google.maps.places.PlacesServiceStatus.OK) {
+            document.getElementById('results').style.display = 'block';
+            const resultContainer = document.getElementById('results');
+
+            const minRating = parseFloat(document.getElementById('rating-filter').value);
+
+            results.forEach((place) => {
+                const rating = place.rating ? place.rating : 0;
+
+                if (rating >= minRating) {
+                    const marker = new google.maps.Marker({
+                        map: map,
+                        position: place.geometry.location,
+                        title: place.name
+                    });
+
+                    markers.push(marker);
+
+                    const resultItem = document.createElement('div');
+                    resultItem.classList.add('result-item');
+
+                    const distance = calculateDistance(userLocation.lat, userLocation.lng, place.geometry.location.lat(), place.geometry.location.lng());
+                    const distanceMiles = (distance / 1609).toFixed(1);
+
+                    resultItem.innerHTML = `
+                        <strong>${place.name} -- ${distanceMiles} mi</strong><br>
+                        ${place.vicinity || 'Address not available'}<br>
+                        Rating: ${rating}
+                    `;
+
+                    resultItem.addEventListener('click', function () {
+                        showRestaurantDetails(place);
+                    });
+
+                    resultContainer.appendChild(resultItem);
+                    google.maps.event.addListener(marker, 'click', function () {
+                        showRestaurantDetails(place);
+                    });
+                }
+            });
+
+            if (pagination && pagination.hasNextPage) {
+                const loadMoreButton = document.createElement('button');
+                loadMoreButton.innerText = "Load More";
+                loadMoreButton.onclick = function () {
+                    pagination.nextPage();  // Load the next set of results
+                };
+                resultContainer.appendChild(loadMoreButton);
+            }
+        }
+    }
+
+    document.getElementById('minimize-btn').addEventListener('click', function() {
+        const resultsContainer = document.getElementById('results-container');
+        const minimizeIcon = document.getElementById('minimize-icon');
+
+        if (resultsContainer.style.maxHeight === '0px') {
+            resultsContainer.style.maxHeight = '300px';  // Expand the list
+            minimizeIcon.textContent = 'expand_less';
+        } else {
+            resultsContainer.style.maxHeight = '0px';  // Minimize the list
+            minimizeIcon.textContent = 'expand_more';
+        }
+    });
+
     function searchRestaurants() {
         clearMarkers(defaultMarkers);
         clearMarkers(markers);
@@ -605,7 +726,7 @@
             return;
         }
 
-        fetchRestaurants(map.getCenter(), distance, searchQuery);
+        fetchRestaurants(userLocation, distance, searchQuery);
     }
 
     function showRestaurantDetails(place) {
@@ -833,7 +954,31 @@
 
 </script>
 
+    <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                const sidebar = document.querySelector(".sidebar");
+                const toggleBtn = document.querySelector("#btn");
+                const searchContainer = document.getElementById('search-container');
+                const resultsContainer = document.getElementById('results-container');
 
+                toggleBtn.addEventListener("click", function () {
+                    sidebar.classList.toggle("open");
+                    menuBtnChange();
+                });
+
+                function menuBtnChange() {
+                    if (sidebar.classList.contains("open")) {
+                        toggleBtn.textContent = "close";
+                        searchContainer.style.left = "260px";  // Shift search container
+                        resultsContainer.style.left = "260px";  // Shift results container
+                    } else {
+                        toggleBtn.textContent = "menu";
+                        searchContainer.style.left = "100px";  // Return search container
+                        resultsContainer.style.left = "100px";  // Return results container
+                    }
+                }
+            });
+</script>
 
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDgFZC03jZ8-VLPhnewMrcDndXqD475ZOE&libraries=places&callback=initMap" async defer></script>
 
