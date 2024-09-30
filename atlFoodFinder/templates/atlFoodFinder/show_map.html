@@ -746,10 +746,6 @@
 
                 let phoneHTML = details.formatted_phone_number ? details.formatted_phone_number : 'N/A';
 
-                let isFavorited = checkIfFavorited(details.place_id);
-
-                let favoriteIcon = isFavorited ? 'favorite' : 'favorite_border';
-
                 const placeName = details.name.toLowerCase();
                 let cuisine = 'N/A';
 
@@ -785,9 +781,7 @@
 
                 document.getElementById('restaurant-details').innerHTML = `
                     ${photoHTML}
-                    <button id="favorite-button">
-                        <i class="material-icons" id="favorite-icon">${favorite-icon}</i>
-                    </button>
+                    <button id="favorite-button">Favorite</button>
                     <br>
                     <button id="show-reviews-button">Show Reviews</button>
                     <p>Cuisine: ${cuisine}</p>
@@ -803,14 +797,7 @@
                 map.setZoom(16);
 
                 document.getElementById('favorite-button').addEventListener('click', function() {
-                    if (isFavorited) {
-                        removeFavorite(details.place_id);
-                        document.getElementId('favorite-icon').textContent = 'favorite_border';
-                    } else {
-                        addFavorite(details);
-                        document.getElementId('favorite-icon').textContent = 'favorite';
-                    }
-                    isFavorited = !isFavorited;
+                    addToFavorites(details);
                 });
 
                 document.getElementById('show-reviews-button').addEventListener('click', function() {
@@ -915,39 +902,26 @@
                     markers = [];
 
                     favorites.forEach(fav => {
-                        const marker = new.google.maps.Marker({
+                        const resultItem = document.createElement('div');
+                        resultItem.classList.add('result-item');
+                        resultItem.innerHTML = fav.name;
+                        resultItem.addEventListener('click', function () {
+                            showRestaurantDetails(fav);
+                        });
+                        favoritesContainer.appendChild(resultItem);
+
+                        const marker = new google.maps.Marker({
                             map: map,
                             position: { lat: fav.latitude, lng: fav.longitude },
                             title: fav.name
                         });
 
                         markers.push(marker);
-
-                        const resultItem = document.createElement('div');
-                        resultItem.classList.add('result-item');
-                        resultItem.innerHTML = `
-                            ${fav.name}
-                            <div id="address-text">${fav.address}</div>
-                        `;
-                        resultItem.addEventListener('click', function () {
-                            showFavoriteDetails(fav);
-                        });
-
-                        resultContainer.appendChild(resultItem);
-
-                        google.maps.event.addListener(marker, 'click', function () {
-                            showFavoriteDetails(fav);
-                        });
                     });
                 } else {
                     alert('Error fetching favorites');
                 }
             });
-    }
-
-    function checkIfFavorited(place_id) {
-        let favorites = JSON.parse(localStorge.getItem('favorites')) || [];
-        return favorites.some(fav => fav.place_id === place_id);
     }
 
     document.getElementById('favorites-btn').addEventListener('click', function() {

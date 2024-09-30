@@ -81,8 +81,13 @@
                 '<input type="text" name="last_name" class="form-input" placeholder="Last Name" required><br>' +
                 '<input type="text" name="username" class="form-input" placeholder="Username" required><br>' +
                 '<input type="password" name="password" class="form-input" placeholder="Password" required><br>' +
-                '<button type="submit" class="create-account-btn">Create Account</button>' +
-                '</form>'
+                '</form>' +
+                '<ul id="password-requirements">'+
+                '<li id="min-length">At least 8 characters</li>'+
+                '<li id="number-required">At least 1 number</li>'+
+                '<li id="special-required">At least 1 special character</li>'+
+                '</ul>'+
+                '<button type="submit" class="create-account-btn">Create Account</button>';
 
             window.onload = function() {
                 createPopup(createAccountHTML);
@@ -115,24 +120,12 @@
                         specialRequired.style.color = "red";
                         isValid = false;
                     }
-                });
 
-                document.querySelector(".create-account-btn").addEventListener("click", function(event) {
-                    var password = document.querySelector("input[name='password']").value;
-
-                    if (!validatePassword(password)) {
-                        event.preventDefault();
+                    if (!isValid) {
+                        this.value = "";
                         alert("Your password doesn't meet the requirements. Please try again.");
                     }
                 });
-            }
-
-            function validatePassword(password) {
-                var minLength = password.length >= 8;
-                var hasNumber = /\d/.test(password);
-                var hasSpecial = /[!@#$%^&*(),.?":{}|<>]/.test(password);
-
-                return minLength && hasNumber && hasSpecial;
             }
 
     </script>
@@ -152,16 +145,9 @@
 <script>
     function submitCreateAccount(event) {
         event.preventDefault();
-
-        const form = document.getElementById('create-account-form');
+        const form = event.target;
         const formData = new FormData(form);
         const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-
-        const password = formData.get('password');
-        if (!validatePassword(password)) {
-            alert("Password doesn't meet the requirements.");
-            return false;
-        }
 
         fetch('/create_account/', {
             method: 'POST',
@@ -174,7 +160,6 @@
         .then(data => {
             if (data.status === 'success') {
                 alert(data.message);
-                window.location.href = '/show_map/';
             } else {
                alert('Error: ' + data.message());
             }
@@ -184,7 +169,11 @@
     }
 </script>
 
+
+
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDgFZC03jZ8-VLPhnewMrcDndXqD475ZOE&callback=initMap" async defer></script>
+
+
 
 </body>
 </html>
