@@ -68,6 +68,21 @@
             transition: max-height 0.5s ease-in-out; /* Smooth transition */
         }
 
+        #favorites-container {
+            display: none;
+            position: fixed;
+            left: 100px;
+            top: 400px;
+            width: 400px;
+            max-height: 300px;
+            overflow-y: auto;
+            background-color: black;
+            padding: 10px;
+            border-radius: 5px;
+            z-index: 1000;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
         #minimize-btn {
             position: absolute;
             top: 10px;
@@ -431,6 +446,13 @@
         <div id="address-text"></div>
     </div>
 
+    <!--favorites list-->
+    <div id="favorites-container">
+        <span id="fav-close-btn">x</span>
+        <div id="fav-results"></div>
+        <div id="address-text"></div>
+    </div>
+
     <!-- Info window for restaurant details -->
     <div id="info-window">
         <span id="close-btn">x</span>
@@ -538,7 +560,7 @@
     function showRestaurantDetails(place) {
         const request = {
             placeId: place.place_id,
-            fields: ['name', 'rating', 'formatted_phone_number', 'vicinity', 'opening_hours', 'photos', 'reviews', 'place_id', 'geometry']
+            fields: ['name', 'rating', 'formatted_phone_number', 'vicinity', 'opening_hours', 'photos', 'reviews', 'place_id', 'geometry', 'types']
         };
 
         service.getDetails(request, (details, status) => {
@@ -552,11 +574,45 @@
 
                 let phoneHTML = details.formatted_phone_number ? details.formatted_phone_number : 'N/A';
 
+                const placeName = details.name.toLowerCase();
+                let cuisine = 'N/A';
+
+                if (placeName.includes('italian') || placeName.includes('pizza') || placeName.includes('pasta')) {
+                    cuisine = 'Italian';
+                } else if (placeName.includes('mexican')) {
+                    cuisine = 'Mexican';
+                } else if (placeName.includes('korean')) {
+                    cuisine = 'Korean';
+                } else if (placeName.includes('chinese')) {
+                    cuisine = 'Chinese';
+                } else if (placeName.includes('japanese') || placeName.includes('sushi') || placeName.includes('ramen')) {
+                    cuisine = 'Japanese';
+                } else if (placeName.includes('french')) {
+                    cuisine = 'French';
+                } else if (placeName.includes('indian')) {
+                    cuisine = 'Indian';
+                } else if (placeName.includes('steak')) {
+                    cuisine = 'Steakhouse';
+                } else if (placeName.includes('thai')) {
+                    cuisine = 'Thai';
+                } else if (placeName.includes('vietnamese') || placeName.includes('pho') || placeName.includes('banh mi')) {
+                    cuisine = 'Vietnamese';
+                } else if (placeName.includes('african')) {
+                    cuisine = 'African';
+                } else if (placeName.includes('persian')) {
+                    cuisine = 'Persian';
+                } else if (placeName.includes('greek')) {
+                    cuisine = 'Greek';
+                } else if (placeName.includes('american') || placeName.includes('burger') || placeName.includes('barbecue')) {
+                    cuisine = 'American';
+                }
+
                 document.getElementById('restaurant-details').innerHTML = `
                     ${photoHTML}
                     <button id="favorite-button">Favorite</button>
                     <br>
                     <button id="show-reviews-button">Show Reviews</button>
+                    <p>Cuisine: ${cuisine}</p>
                     <p>Rating: ${details.rating || 'N/A'}</p>
                     <p>Address: ${details.vicinity}</p>
                     <p>Phone: ${phoneHTML}</p>
@@ -667,8 +723,8 @@
             .then(data => {
                 if (data.status === 'success') {
                     const favorites = data.favorites;
-                    const resultsContainer = document.getElementById('results');
-                    resultsContainer.innerHTML = '';
+                    const favoritesContainer = document.getElementById('results');
+                    favoritesContainer.innerHTML = '';
 
                     clearMarkers(markers);
                     markers = [];
@@ -676,11 +732,11 @@
                     favorites.forEach(fav => {
                         const resultItem = document.createElement('div');
                         resultItem.classList.add('result-item');
-                        resultItem.textContent = fav.name;
+                        resultItem.innerHTML = fav.name;
                         resultItem.addEventListener('click', function () {
-                            showFavoriteDetails(fav);
+                            showRestaurantDetails(fav);
                         });
-                        resultsContainer.appendChild(resultItem);
+                        favoritesContainer.appendChild(resultItem);
 
                         const marker = new google.maps.Marker({
                             map: map,
@@ -696,25 +752,31 @@
             });
     }
 
-    function showFavoriteDetails(fav) {
-        document.getElementById('restaurant-name').innerText = fav.name;
-        document.getElementById('restaurant-details').innerHTML = `
-            <p>Rating: ${fav.rating || 'N/A'}</p>
-            <p>Address: ${fav.address}</p>
-            <a href="https://www.google.com/maps/place/?q=place_id:${fav.place_id}" target="_blank">View on Google Maps</a>
-        `;
-        document.getElementById('info-window').style.display = 'block';
-    }
 
+    //clear markers from map
     function clearMarkers(markersArray) {
         for (let i = 0; i < markersArray.length; i++) {
             markersArray[i].setMap(null);
         }
     }
 
-    document.getElementById('favorites-btn').addEventListener('click', function() {
-        showFavorites();  // Trigger the AJAX request to fetch and display favorites
+    //Open favorites when button is clicked
+    document.getElementById('favorites-btn').addEventListener('click', function(event) {
+        event.preventDefault();
+        console.log('Favorites button clicked');
+        const favoritesContainer = document.getElementById('favorites-container');
+        favoritesContainer.style.display = 'block'; // Show the popup
+        showFavorites();
     });
+
+
+    //Close favorites when x is clicked
+    document.getElementById('fav-close-btn').addEventListener('click', function() {
+        const favoritesContainer = document.getElementById('favorites-container');
+        favoritesContainer.style.display = 'none'; // Hide the popup
+    });
+
+
 
     // Initialize the map after the DOM content has been loaded
     document.addEventListener("DOMContentLoaded", function() {
@@ -744,7 +806,7 @@
                 <span class="tooltip">User</span>
             </li>
             <li>
-                <a href="{% url 'atlFoodFinder:favorites' %}" id="favorites-btn">
+                <a href="#" id="favorites-btn">
                     <i class='material-icons'>favorite</i>
                     <span class="links_name">Favorites</span>
                 </a>

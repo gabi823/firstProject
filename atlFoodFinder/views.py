@@ -11,7 +11,7 @@ from django.contrib import messages
 from django.contrib.auth import logout
 from django import forms
 from .models import FavoriteRestaurant
-from .models import Favorite
+
 
 
 
