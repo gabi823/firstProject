@@ -83,6 +83,10 @@
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
         }
 
+        #fav-close-btn {
+            color: white;
+        }
+
         #minimize-btn {
             position: absolute;
             top: 10px;
@@ -471,6 +475,53 @@
         </div>
     </div>
 
+    <div class="sidebar">
+        <div class="logo-details">
+            <div class="logo_name">Welcome, {{ user.first_name }}</div>
+            <i class='material-icons' id="btn">menu</i>
+        </div>
+        <ul class="nav-list">
+            <li>
+                <a href="{% url 'atlFoodFinder:show_map' %}">
+                    <i class='material-icons'>pin_drop</i>
+                    <span class="links_name">Map Dashboard</span>
+                </a>
+                <span class="tooltip">Search</span>
+            </li>
+            <li>
+                <a href="{% url 'atlFoodFinder:profile_page' %}">
+                    <i class='material-icons'>person</i>
+                    <span class="links_name">User</span>
+                </a>
+                <span class="tooltip">User</span>
+            </li>
+            <li>
+                <a href="#" id="favorites-btn">
+                    <i class='material-icons'>favorite</i>
+                    <span class="links_name">Favorites</span>
+                </a>
+                <span class="tooltip">Favorites</span>
+            </li>
+            <li>
+                <a href="{% url 'atlFoodFinder:reviews' %}">
+                    <i class='material-icons'>reviews</i>
+                    <span class="links_name">Reviews</span>
+                </a>
+                <span class="tooltip">Reviews</span>
+            </li>
+            <li class="profile">
+                <a href="{% url 'atlFoodFinder:logout_user' %}">
+                    <i class='material-icons' id="log_out">logout</i>
+                <div class="profile-details">
+                    <div class="name_job">
+                        <div class="name">{{ user.first_name }}</div>
+                    </div>
+                </div>
+                </a>
+            </li>
+        </ul>
+    </div>
+
 <script>
     let map, service, markers = [], defaultMarkers = [];
 
@@ -752,6 +803,12 @@
             });
     }
 
+    document.getElementById('favorites-btn').addEventListener('click', function() {
+        document.getElementById('favorites-container').style.display = 'block';
+        showFavorites();
+    });
+
+
 
     //clear markers from map
     function clearMarkers(markersArray) {
@@ -759,15 +816,6 @@
             markersArray[i].setMap(null);
         }
     }
-
-    //Open favorites when button is clicked
-    document.getElementById('favorites-btn').addEventListener('click', function(event) {
-        event.preventDefault();
-        console.log('Favorites button clicked');
-        const favoritesContainer = document.getElementById('favorites-container');
-        favoritesContainer.style.display = 'block'; // Show the popup
-        showFavorites();
-    });
 
 
     //Close favorites when x is clicked
@@ -785,52 +833,7 @@
 
 </script>
 
-    <div class="sidebar">
-        <div class="logo-details">
-            <div class="logo_name">Welcome, {{ user.first_name }}</div>
-            <i class='material-icons' id="btn">menu</i>
-        </div>
-        <ul class="nav-list">
-            <li>
-                <a href="{% url 'atlFoodFinder:show_map' %}">
-                    <i class='material-icons'>pin_drop</i>
-                    <span class="links_name">Map Dashboard</span>
-                </a>
-                <span class="tooltip">Search</span>
-            </li>
-            <li>
-                <a href="{% url 'atlFoodFinder:profile_page' %}">
-                    <i class='material-icons'>person</i>
-                    <span class="links_name">User</span>
-                </a>
-                <span class="tooltip">User</span>
-            </li>
-            <li>
-                <a href="#" id="favorites-btn">
-                    <i class='material-icons'>favorite</i>
-                    <span class="links_name">Favorites</span>
-                </a>
-                <span class="tooltip">Favorites</span>
-            </li>
-            <li>
-                <a href="{% url 'atlFoodFinder:reviews' %}">
-                    <i class='material-icons'>reviews</i>
-                    <span class="links_name">Reviews</span>
-                </a>
-                <span class="tooltip">Reviews</span>
-            </li>
-            <li class="profile">
-                <a href="{% url 'atlFoodFinder:logout_user' %}">
-                    <i class='material-icons' id="log_out">logout</i>
-                <div class="profile-details">
-                    <div class="name_job">
-                        <div class="name">{{ user.first_name }}</div>
-                    </div>
-                </div>
-                </a>
-            </li>
-        </ul>
-    </div>
+
 
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDgFZC03jZ8-VLPhnewMrcDndXqD475ZOE&libraries=places&callback=initMap" async defer></script>
 
