@@ -4,9 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="af5ccc2b-1e4a-488d-8c5e-a8d169aa5047" name="Changes" comment="added basic framework for cuisine type">
+    <list default="true" id="af5ccc2b-1e4a-488d-8c5e-a8d169aa5047" name="Changes" comment="css edits">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/atlFoodFinder/templates/atlFoodFinder/show_map.html" beforeDir="false" afterPath="$PROJECT_DIR$/atlFoodFinder/templates/atlFoodFinder/show_map.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/atlFoodFinder/templates/atlFoodFinder/create_account.html" beforeDir="false" afterPath="$PROJECT_DIR$/atlFoodFinder/templates/atlFoodFinder/create_account.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/db.sqlite3" beforeDir="false" afterPath="$PROJECT_DIR$/db.sqlite3" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -71,8 +72,8 @@
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.pycharm.django.structure.promotion.once.per.project": "true",
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "git-widget-placeholder": "addCuisine",
-    "last_opened_file_path": "/Users/gabilong/addCuisine",
+    "git-widget-placeholder": "edits1",
+    "last_opened_file_path": "/Users/gabilong/edits1",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -177,6 +178,7 @@
       <workItem from="1727584728499" duration="376000" />
       <workItem from="1727585402638" duration="568000" />
       <workItem from="1727638714996" duration="15004000" />
+      <workItem from="1727734218150" duration="1385000" />
     </task>
     <task id="LOCAL-00001" summary="Initializing project files">
       <option name="closed" value="true" />
@@ -266,7 +268,15 @@
       <option name="project" value="LOCAL" />
       <updated>1727663977476</updated>
     </task>
-    <option name="localTasksCounter" value="12" />
+    <task id="LOCAL-00012" summary="css edits">
+      <option name="closed" value="true" />
+      <created>1727734915113</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1727734915113</updated>
+    </task>
+    <option name="localTasksCounter" value="13" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -280,7 +290,8 @@
     <MESSAGE value="rearranged some elements with the search bar, improved UI of restaurant details" />
     <MESSAGE value="added some stuff for the favorites popup, still have to link to user data" />
     <MESSAGE value="added basic framework for cuisine type" />
-    <option name="LAST_COMMIT_MESSAGE" value="added basic framework for cuisine type" />
+    <MESSAGE value="css edits" />
+    <option name="LAST_COMMIT_MESSAGE" value="css edits" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
