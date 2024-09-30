@@ -69,7 +69,7 @@
 
         #results-container {
             position: absolute;
-            top: 85px;
+            top: 95px;
             left: 100px;
             width: 400px;
             max-height: 300px; /* Max height when expanded */
@@ -100,19 +100,22 @@
             display: none;
             position: fixed;
             left: 100px;
-            top: 400px;
+            top: 410px;
             width: 400px;
             max-height: 300px;
             overflow-y: auto;
             background-color: black;
             padding: 10px;
-            border-radius: 5px;
+            border-radius: 8px;
             z-index: 1000;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
         }
 
-        #fav-close-btn {
+        #favorites-label {
+            font-size: medium;
+            font-weight: bold;
             color: white;
+            padding: 10px;
         }
 
         #minimize-btn {
@@ -159,6 +162,18 @@
             float: right;
             cursor: pointer;
             color: white;
+        }
+
+        #fav-close-btn {
+            float: right;
+            cursor: pointer;
+            color: white;
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: none;
+            border: none;
+            z-index: 10;
         }
 
         #restaurant-name {
@@ -463,6 +478,11 @@
         #address-text {
             font-size: 11px;
         }
+
+        #restaurant-image {
+            max-height: 300px;
+            max-width: 400px;
+        }
     </style>
 </head>
 <body>
@@ -497,6 +517,7 @@
 
     <!--favorites list-->
     <div id="favorites-container">
+        <div id="favorites-label">Favorites</div>
         <span id="fav-close-btn">x</span>
         <div id="fav-results"></div>
         <div id="address-text"></div>
@@ -741,7 +762,7 @@
                 let photoHTML = '';
                 if (details.photos && details.photos.length > 0) {
                     const photoUrl = details.photos[0].getUrl({ maxWidth: 300, maxHeight: 200 });
-                    photoHTML = `<img src="${photoUrl}" alt="${details.name}" />`;
+                    photoHTML = `<img id="restaurant-image" src="${photoUrl}" alt="${details.name}" />`;
                 }
 
                 let phoneHTML = details.formatted_phone_number ? details.formatted_phone_number : 'N/A';
