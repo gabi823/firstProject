@@ -4,10 +4,11 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import User
 from django.http import JsonResponse
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.forms import PasswordChangeForm
-from django.contrib import messages
+from .forms import CustomPasswordChangeForm
 from django.contrib.auth import logout
 from django import forms
 from .models import FavoriteRestaurant
@@ -75,39 +76,38 @@ def get_favorites(request):
         })
     return JsonResponse({'status': 'success', 'favorites': favorite_list})
 
-class CustomPasswordChangeForm(forms.Form):
-    new_password1 = forms.CharField(label="New Password", widget=forms.PasswordInput)
-    new_password2 = forms.CharField(label="Confirm New Password", widget=forms.PasswordInput)
-
-    def clean(self):
-        cleaned_data = super().clean()
-        password1 = cleaned_data.get("new_password1")
-        password2 = cleaned_data.get("new_password2")
-
-        if password1 and password2 and password1 != password2:
-            raise forms.ValidationError("The two password fields didn’t match.")
-
-        return cleaned_data
-
 @login_required
 def profile_page(request):
+    form = CustomPasswordChangeForm()
+    success_message = None
+    error_message = None
+
     if request.method == 'POST':
         form = CustomPasswordChangeForm(request.POST)
         if form.is_valid():
             new_password = form.cleaned_data.get('new_password1')
             user = request.user
             user.set_password(new_password)
-            update_session_auth_hash(request, user)
-            messages.success(request, 'Your password has been successfully updated!')
-            return redirect('atlFoodFinder:profile_page')
+            user.save()
+            update_session_auth_hash(request, user)  # Keep the user logged in after password change
+            success_message = 'Your password has been successfully updated!'
+            return render(request, 'atlFoodFinder/profile_page.html', {
+                'user': request.user,
+                'form': form,
+                'success_message': success_message,
+                'error_message': error_message,
+            })
         else:
-            messages.error(request, 'Please correct the error below.')
+            error_message = 'Your password change was not valid. Try again!'
     else:
         form = CustomPasswordChangeForm()
 
-    return render(request, 'atlFoodFinder/profile_page.html',{
+        # Render the profile page with the form
+    return render(request, 'atlFoodFinder/profile_page.html', {
         'user': request.user,
         'form': form,
+        'success_message': success_message,
+        'error_message': error_message,
     })
 
 def logout_user(request):
@@ -172,3 +172,21 @@ def login_user(request):
     return render(request, 'atlFoodFinder/login.html')
 def reviews(request):
     return render(request, 'atlFoodFinder/reviews.html')
+def change_password(request):
+    if request.method == 'POST':
+        form = CustomPasswordChangeForm(request.POST)
+        if form.is_valid():
+            # Get new password and update the user’s password
+            new_password1 = form.cleaned_data['new_password1']
+            request.user.set_password(new_password1)
+            request.user.save()
+
+            # Update session hash to keep the user logged in
+            update_session_auth_hash(request, request.user)
+
+            # Redirect to a success page after the password change
+            return redirect('password_change_done')  # Make sure this URL exists
+    else:
+        form = CustomPasswordChangeForm()
+
+    return render(request, 'change_password.html', {'form': form})
