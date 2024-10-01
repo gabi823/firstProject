@@ -621,7 +621,7 @@
         }
     }
 
-    function fetchRestaurants(location, radius, keyword = "") {
+    function fetchRestaurants(location, radius, keyword = "", minRating = 0) {
         const request = {
             location: location,
             radius: radius,
@@ -630,42 +630,71 @@
         };
 
         service = new google.maps.places.PlacesService(map);
-        service.nearbySearch(request, handleDefaultResults);
+        service.nearbySearch(request, function(results, status) {
+            handleDefaultResults(results, status, minRating, radius);  // Pass the rating filter to handleDefaultResults
+        });
     }
 
-    function handleDefaultResults(results, status) {
-        if (status === google.maps.places.PlacesServiceStatus.OK) {
-            document.getElementById('results').style.display = 'block';
-            const resultContainer = document.getElementById('results');
-            resultContainer.innerHTML = '';
+function handleDefaultResults(results, status) {
+    if (status === google.maps.places.PlacesServiceStatus.OK) {
+        document.getElementById('results').style.display = 'block';
+        const resultContainer = document.getElementById('results');
+        resultContainer.innerHTML = '';  // Clear previous results
 
-            results.forEach((place) => {
-                const marker = new google.maps.Marker({
-                    map: map,
-                    position: place.geometry.location,
-                    title: place.name
-                });
+        // Get the rating filter value and convert it to a float
+        const minRating = parseFloat(document.getElementById('rating-filter').value);
+        // Get the distance filter value in meters (converting miles to meters)
+        const maxDistance = parseInt(document.getElementById('distance-filter').value) * 1609;
 
-                defaultMarkers.push(marker);
+        // Clear existing markers on the map
+        clearMarkers(defaultMarkers);
+        defaultMarkers = [];  // Reset marker array
 
-                const resultItem = document.createElement('div');
-                resultItem.classList.add('result-item');
-                resultItem.innerHTML = `
-                    ${place.name}
-                    <div id="address-text">${place.vicinity}<div>
-                `;
-                resultItem.addEventListener('click', function () {
-                    showRestaurantDetails(place);
-                });
+        // Loop through each place and filter by rating and distance
+        results.forEach((place) => {
+            // Safely check if the place has geometry data before using it
+            if (place.geometry && place.geometry.location) {
+                // Calculate distance between the user and the restaurant in meters
+                const distance = google.maps.geometry.spherical.computeDistanceBetween(
+                    new google.maps.LatLng(userLocation.lat, userLocation.lng),
+                    place.geometry.location
+                );
 
-                resultContainer.appendChild(resultItem);
+                // Filter by both the minimum rating and distance criteria
+                if (place.rating >= minRating && distance <= maxDistance) {
+                    const marker = new google.maps.Marker({
+                        map: map,
+                        position: place.geometry.location,
+                        title: place.name
+                    });
 
-                google.maps.event.addListener(marker, 'click', function () {
-                    showRestaurantDetails(place);
-                });
-            });
-        }
+                    defaultMarkers.push(marker);  // Add marker to the array
+
+                    // Create and display the result item in the list
+                    const resultItem = document.createElement('div');
+                    resultItem.classList.add('result-item');
+                    resultItem.innerHTML = `
+                        <strong>${place.name}</strong>
+                        <div id="address-text">${place.vicinity}</div>
+                        <div id="rating-text">Rating: ${place.rating}</div>
+                        <div>Distance: ${(distance / 1609).toFixed(1)} miles</div>  <!-- Display distance in miles -->
+                    `;
+                    resultItem.addEventListener('click', function () {
+                        showRestaurantDetails(place);
+                    });
+
+                    resultContainer.appendChild(resultItem);
+
+                    // Add a click listener to the marker to show restaurant details
+                    google.maps.event.addListener(marker, 'click', function () {
+                        showRestaurantDetails(place);
+                    });
+                }
+            }
+        });
     }
+}
+
 
         function handleSearchResults(results, status, pagination) {
         if (status === google.maps.places.PlacesServiceStatus.OK) {
@@ -747,7 +776,7 @@
             return;
         }
 
-        fetchRestaurants(userLocation, distance, searchQuery);
+        fetchRestaurants(userLocation, distance, searchQuery, minRating);
     }
 
     function showRestaurantDetails(place) {
@@ -1001,7 +1030,7 @@
             });
 </script>
 
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDgFZC03jZ8-VLPhnewMrcDndXqD475ZOE&libraries=places&callback=initMap" async defer></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDgFZC03jZ8-VLPhnewMrcDndXqD475ZOE&libraries=places,geometry&callback=initMap" async defer></script>
 
 </body>
 </html>
