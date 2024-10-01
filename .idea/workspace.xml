@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="af5ccc2b-1e4a-488d-8c5e-a8d169aa5047" name="Changes" comment="css edits">
+    <list default="true" id="af5ccc2b-1e4a-488d-8c5e-a8d169aa5047" name="Changes" comment="favorites edits">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/atlFoodFinder/templates/atlFoodFinder/show_map.html" beforeDir="false" afterPath="$PROJECT_DIR$/atlFoodFinder/templates/atlFoodFinder/show_map.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/db.sqlite3" beforeDir="false" afterPath="$PROJECT_DIR$/db.sqlite3" afterDir="false" />
@@ -179,7 +179,7 @@
       <workItem from="1727585402638" duration="568000" />
       <workItem from="1727638714996" duration="15004000" />
       <workItem from="1727734218150" duration="1385000" />
-      <workItem from="1727804323126" duration="2175000" />
+      <workItem from="1727804323126" duration="5201000" />
     </task>
     <task id="LOCAL-00001" summary="Initializing project files">
       <option name="closed" value="true" />
@@ -277,7 +277,15 @@
       <option name="project" value="LOCAL" />
       <updated>1727734915113</updated>
     </task>
-    <option name="localTasksCounter" value="13" />
+    <task id="LOCAL-00013" summary="favorites edits">
+      <option name="closed" value="true" />
+      <created>1727806804599</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1727806804600</updated>
+    </task>
+    <option name="localTasksCounter" value="14" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -292,7 +300,8 @@
     <MESSAGE value="added some stuff for the favorites popup, still have to link to user data" />
     <MESSAGE value="added basic framework for cuisine type" />
     <MESSAGE value="css edits" />
-    <option name="LAST_COMMIT_MESSAGE" value="css edits" />
+    <MESSAGE value="favorites edits" />
+    <option name="LAST_COMMIT_MESSAGE" value="favorites edits" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

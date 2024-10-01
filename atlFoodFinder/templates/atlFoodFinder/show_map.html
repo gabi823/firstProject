@@ -33,6 +33,8 @@
             padding: 10px;
             border-radius: 8px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            transition: max-height 0.5s ease-in-out, padding 0.5s ease-in-out, left 0.5s ease; /* Smooth transition */
+
         }
 
         .sidebar.open ~ #search-container {
@@ -110,6 +112,8 @@
             border-radius: 8px;
             z-index: 1000;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            transition: max-height 0.5s ease-in-out, padding 0.5s ease-in-out, left 0.5s ease; /* Smooth transition */
+
         }
 
         #fav-close-btn {
@@ -133,6 +137,12 @@
             font-weight: bold;
             color: white;
             padding: 10px;
+        }
+
+        .remove-fav-button {
+            cursor: pointer;
+            padding: 5px;
+            top: 3px;
         }
 
         #minimize-btn {
@@ -512,7 +522,7 @@
 
     <!-- Restaurant results -->
     <div id="results-container">
-        <div id="results-label">Results...</div>
+        <div id="results-label">Results</div>
         <button id="minimize-btn">
             <i class="material-icons" id="minimize-icon">expand_less</i>
         </button>
@@ -679,9 +689,8 @@ function handleDefaultResults(results, status) {
                     const resultItem = document.createElement('div');
                     resultItem.classList.add('result-item');
                     resultItem.innerHTML = `
-                        <strong>${place.name}</strong>
-                        <div id="address-text">Address: ${place.vicinity}</div>
-                        <div id="address-text">Distance: ${(distance / 1609).toFixed(1)} miles</div>  <!-- Display distance in miles -->
+                        <strong>${place.name}</strong> - ${(distance / 1609).toFixed(1)} mi
+                        <div id="address-text">${place.vicinity}</div>
                     `;
                     resultItem.addEventListener('click', function () {
                         showRestaurantDetails(place);
@@ -726,9 +735,8 @@ function handleDefaultResults(results, status) {
                     const distanceMiles = (distance / 1609).toFixed(1);
 
                     resultItem.innerHTML = `
-                        <strong>${place.name}</strong>
+                        <strong>${place.name}</strong> - ${(distance / 1609).toFixed(1)} mi
                         <div id="address-text">${place.vicinity}</div>
-                        <div id="address-text">Distance: ${(distance / 1609).toFixed(1)} miles</div>  <!-- Display distance in miles -->
                     `;
 
                     resultItem.addEventListener('click', function () {
@@ -950,6 +958,8 @@ function handleDefaultResults(results, status) {
         }).then(response => response.json())
             .then(data => {
                 if (data.status === 'success') {
+                    const resultItem = document.querySelector(`[data-place-id="${place_id}"]`).parentElement;
+                    resultItem.remove()
                     alert('Restaurant removed from favorites!');
                 } else {
                     alert('Error: ' + data.message);
@@ -980,6 +990,7 @@ function handleDefaultResults(results, status) {
                              <br>
                              <div id="address-text">${fav.address}</div>
                              <div id="address-text">Rating: ${fav.rating}</div>
+                             <button class="remove-fav-button" data-place-id="${fav.place_id}">Remove From Favorites</button>
                         `;
                         resultItem.addEventListener('click', function () {
                             showRestaurantDetails(fav);
@@ -991,8 +1002,13 @@ function handleDefaultResults(results, status) {
                             position: { lat: fav.latitude, lng: fav.longitude },
                             title: fav.name
                         });
-
                         markers.push(marker);
+
+                        const removeButton = resultItem.querySelector('.remove-fav-button');
+                            removeButton.addEventListener('click', function(event) {
+                                event.stopPropagation(); // Prevent triggering showRestaurantDetails
+                                removeFavorite(fav.place_id);
+                        });
                     });
                 } else {
                     alert('Error fetching favorites');
@@ -1031,6 +1047,7 @@ function handleDefaultResults(results, status) {
                 const toggleBtn = document.querySelector("#btn");
                 const searchContainer = document.getElementById('search-container');
                 const resultsContainer = document.getElementById('results-container');
+                const favoritesContainer = document.getElementById('favorites-container');
 
                 toggleBtn.addEventListener("click", function () {
                     sidebar.classList.toggle("open");
@@ -1042,10 +1059,13 @@ function handleDefaultResults(results, status) {
                         toggleBtn.textContent = "close";
                         searchContainer.style.left = "260px";  // Shift search container
                         resultsContainer.style.left = "260px";  // Shift results container
+                        favoritesContainer.style.left = "260px"
                     } else {
                         toggleBtn.textContent = "menu";
                         searchContainer.style.left = "100px";  // Return search container
                         resultsContainer.style.left = "100px";  // Return results container
+                        favoritesContainer.style.left = "100px"
+
                     }
                 }
             });
