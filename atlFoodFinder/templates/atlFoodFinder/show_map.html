@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="csrf-token" content="{{ csrf_token }}">
     <link href="https://fonts.googleapis.com/css?family=Rethink+Sans&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <title>ATL Food Finder</title>
@@ -100,7 +101,7 @@
             display: none;
             position: fixed;
             left: 100px;
-            top: 410px;
+            top: 150px;
             width: 400px;
             max-height: 300px;
             overflow-y: auto;
@@ -831,7 +832,8 @@ function handleDefaultResults(results, status) {
 
                 document.getElementById('restaurant-details').innerHTML = `
                     ${photoHTML}
-                    <button id="favorite-button">Favorite</button>
+                    <button id="favorite-button" data-place-id="${details.place_id}">Favorite</button>
+                    </button>
                     <br>
                     <button id="show-reviews-button">Show Reviews</button>
                     <p>Cuisine: ${cuisine}</p>
@@ -842,12 +844,22 @@ function handleDefaultResults(results, status) {
                     <a href="https://www.google.com/maps/place/?q=place_id:${details.place_id}" target="_blank">View on Google Maps</a>
                 `;
 
+
                 document.getElementById('info-window').style.display = 'block';
                 map.setCenter(details.geometry.location);
                 map.setZoom(16);
 
                 document.getElementById('favorite-button').addEventListener('click', function() {
-                    addToFavorites(details);
+                    console.log("inside function")
+                    const placeId = this.getAttribute('data-place-id');
+                    const name = document.getElementById('restaurant-name').textContent;
+                    {#console.log("stuff:" + document.querySelector('#restaurant-details p:nth-of-type(2)').textContent)#}
+                    const rating = document.querySelector('#restaurant-details p:nth-of-type(2)').textContent.split(' ')[1];
+                    const address = document.querySelector('#restaurant-details p:nth-of-type(3)').textContent;
+                    const latitude = map.getCenter().lat();
+                    const longitude = map.getCenter().lng();
+
+                    addFavorite(placeId, name, rating, address, latitude, longitude);
                 });
 
                 document.getElementById('show-reviews-button').addEventListener('click', function() {
@@ -886,8 +898,10 @@ function handleDefaultResults(results, status) {
         });
     }
 
-    function addFavorite(place) {
-        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+    function addFavorite(placeId, name, rating, address, latitude, longitude) {
+        const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+        console.log("Sending data to the server: ", {placeId, name, rating, address, latitude, longitude });
 
         fetch('/add_favorite/', {
             method: 'POST',
@@ -896,25 +910,30 @@ function handleDefaultResults(results, status) {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                place_id: place.place_id,
-                name: place.name,
-                rating: place.rating,
-                address: place.vicinity,
-                latitude: place.geometry.location.lat(),
-                longitude: place.geometry.location.lng(),
+                place_id: placeId,
+                name: name,
+                rating: rating,
+                address: address,
+                latitude: latitude,
+                longitude: longitude,
             })
         }).then(response => response.json())
             .then(data => {
                 if (data.status === 'success') {
                     alert('Restaurant added to favorites!');
+                    updateFavorites();
                 } else {
                     alert('Error: ' + data.message);
                 }
+            })
+            .catch(error => {
+                console.error("Error occurred while adding to favorites:", error);
             });
     }
 
+
     function removeFavorite(place_id) {
-        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+        const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
         fetch('/remove_favorite/', {
             method: 'POST',
@@ -935,26 +954,25 @@ function handleDefaultResults(results, status) {
             });
     }
 
-    function showFavorites() {
+    function updateFavorites() {
         fetch('/get_favorites/', {
             method: 'GET',
             headers: {
-                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                'X-CSRFToken': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
             }
         }).then(response => response.json())
             .then(data => {
                 if (data.status === 'success') {
-                    const favorites = data.favorites;
-                    const favoritesContainer = document.getElementById('results');
+                    const favoritesContainer = document.getElementById('fav-results');
                     favoritesContainer.innerHTML = '';
 
                     clearMarkers(markers);
                     markers = [];
 
-                    favorites.forEach(fav => {
+                    data.favorites.forEach(fav => {
                         const resultItem = document.createElement('div');
                         resultItem.classList.add('result-item');
-                        resultItem.innerHTML = fav.name;
+                        resultItem.innerHTML = `<strong>${fav.name}</strong><br>${fav.address}`;
                         resultItem.addEventListener('click', function () {
                             showRestaurantDetails(fav);
                         });
@@ -976,10 +994,8 @@ function handleDefaultResults(results, status) {
 
     document.getElementById('favorites-btn').addEventListener('click', function() {
         document.getElementById('favorites-container').style.display = 'block';
-        showFavorites();
+        updateFavorites();
     });
-
-
 
     //clear markers from map
     function clearMarkers(markersArray) {
@@ -988,14 +1004,11 @@ function handleDefaultResults(results, status) {
         }
     }
 
-
     //Close favorites when x is clicked
     document.getElementById('fav-close-btn').addEventListener('click', function() {
         const favoritesContainer = document.getElementById('favorites-container');
         favoritesContainer.style.display = 'none'; // Hide the popup
     });
-
-
 
     // Initialize the map after the DOM content has been loaded
     document.addEventListener("DOMContentLoaded", function() {

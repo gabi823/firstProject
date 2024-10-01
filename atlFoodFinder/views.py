@@ -1,5 +1,4 @@
 import json
-
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import User
@@ -13,39 +12,40 @@ from django.contrib.auth import logout
 from django import forms
 from .models import FavoriteRestaurant
 
-
-
-
 # Create your views here.
 
 @login_required
 def add_favorite(request):
     if request.method == 'POST':
-        data = json.loads(request.body)
-        place_id = data.get('place_id')
-        name = data.get('name')
-        rating = data.get('rating')
-        address = data.get('address')
-        latitude = data.get('latitude')
-        longitude = data.get('longitude')
+        try:
+            data = json.loads(request.body)
+            place_id = data.get('place_id')
+            name = data.get('name')
+            rating = data.get('rating')
+            address = data.get('address')
+            latitude = data.get('latitude')
+            longitude = data.get('longitude')
 
-        # Check if the restaurant is already favorited by the user
-        if FavoriteRestaurant.objects.filter(user=request.user, place_id=place_id).exists():
-            return JsonResponse({'status': 'error', 'message': 'This restaurant is already in your favorites.'})
+            # Check if the restaurant is already favorited by the user
+            if FavoriteRestaurant.objects.filter(user=request.user, place_id=place_id).exists():
+                return JsonResponse({'status': 'error', 'message': 'This restaurant is already in your favorites.'})
 
-        # Add the restaurant to the user's favorites
-        favorite = FavoriteRestaurant(
-            user=request.user,
-            name=name,
-            place_id=place_id,
-            rating=rating,
-            address=address,
-            latitude=latitude,
-            longitude=longitude
-        )
-        favorite.save()
+            # Add the restaurant to the user's favorites
+            favorite = FavoriteRestaurant(
+                user=request.user,
+                name=name,
+                place_id=place_id,
+                rating=rating,
+                address=address,
+                latitude=latitude,
+                longitude=longitude
+            )
+            favorite.save()
 
-        return JsonResponse({'status': 'success', 'message': 'Restaurant has been added to favorites.'})
+            return JsonResponse({'status': 'success', 'message': 'Restaurant has been added to favorites.'})
+
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)})
 
     return JsonResponse({'status': 'error', 'message': 'Invalid request method.'})
 
@@ -144,12 +144,15 @@ def create_account(request):
 @login_required
 def favorites(request):
     # Get all favorite restaurants for the current user
-    favorites = Favorite.objects.filter(user=request.user)
+    favorites = FavoriteRestaurant.objects.filter(user=request.user)
     return render(request, 'atlFoodFinder/show_map.html', {'favorites': favorites})
 
 @login_required
 def show_map(request):
-    return render(request, 'atlFoodFinder/show_map.html')
+    favorited_place_ids = FavoriteRestaurant.objects.filter(user=request.user).values_list('place_id', flat=True)
+    return render(request, 'atlFoodFinder/show_map.html', {
+        'favorited_place_ids': list(favorited_place_ids)
+    })
 
 def login_user(request):
     if request.user.is_authenticated:
