@@ -73,7 +73,7 @@
             top: 95px;
             left: 100px;
             width: 400px;
-            max-height: 300px; /* Max height when expanded */
+            max-height: 330px;
             overflow-y: auto;
             background-color: black;
             padding: 15px 20px;
@@ -101,12 +101,12 @@
             display: none;
             position: fixed;
             left: 100px;
-            top: 150px;
+            top: 440px;
             width: 400px;
-            max-height: 300px;
+            max-height: 400px;
             overflow-y: auto;
             background-color: black;
-            padding: 10px;
+            padding: 15px 20px 35px;
             border-radius: 8px;
             z-index: 1000;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
@@ -122,6 +122,10 @@
             background: none;
             border: none;
             z-index: 10;
+        }
+
+        #fav-results {
+            color: white;
         }
 
         #favorites-label {
@@ -477,7 +481,7 @@
         }
 
         #address-text {
-            font-size: 11px;
+            font-size: 13px;
         }
 
         #restaurant-image {
@@ -676,9 +680,8 @@ function handleDefaultResults(results, status) {
                     resultItem.classList.add('result-item');
                     resultItem.innerHTML = `
                         <strong>${place.name}</strong>
-                        <div id="address-text">${place.vicinity}</div>
-                        <div id="rating-text">Rating: ${place.rating}</div>
-                        <div>Distance: ${(distance / 1609).toFixed(1)} miles</div>  <!-- Display distance in miles -->
+                        <div id="address-text">Address: ${place.vicinity}</div>
+                        <div id="address-text">Distance: ${(distance / 1609).toFixed(1)} miles</div>  <!-- Display distance in miles -->
                     `;
                     resultItem.addEventListener('click', function () {
                         showRestaurantDetails(place);
@@ -723,9 +726,9 @@ function handleDefaultResults(results, status) {
                     const distanceMiles = (distance / 1609).toFixed(1);
 
                     resultItem.innerHTML = `
-                        <strong>${place.name} -- ${distanceMiles} mi</strong><br>
-                        ${place.vicinity || 'Address not available'}<br>
-                        Rating: ${rating}
+                        <strong>${place.name}</strong>
+                        <div id="address-text">${place.vicinity}</div>
+                        <div id="address-text">Distance: ${(distance / 1609).toFixed(1)} miles</div>  <!-- Display distance in miles -->
                     `;
 
                     resultItem.addEventListener('click', function () {
@@ -972,7 +975,12 @@ function handleDefaultResults(results, status) {
                     data.favorites.forEach(fav => {
                         const resultItem = document.createElement('div');
                         resultItem.classList.add('result-item');
-                        resultItem.innerHTML = `<strong>${fav.name}</strong><br>${fav.address}`;
+                        resultItem.innerHTML = `
+                             <strong>${fav.name}</strong>
+                             <br>
+                             <div id="address-text">${fav.address}</div>
+                             <div id="address-text">Rating: ${fav.rating}</div>
+                        `;
                         resultItem.addEventListener('click', function () {
                             showRestaurantDetails(fav);
                         });
