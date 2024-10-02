@@ -10,7 +10,6 @@ urlpatterns = [
     path('login/', views.login_user, name='login_user'),
     path('show_map/', views.show_map, name='show_map'),
     path('logout/', views.logout_user, name='logout_user'),
-    path('reviews/', views.reviews, name='reviews'),
     path('add_favorite/', views.add_favorite, name='add_favorite'),
     path('remove_favorite/', views.remove_favorite, name='remove_favorite'),
     path('get_favorites/', views.get_favorites, name='get_favorites'),
