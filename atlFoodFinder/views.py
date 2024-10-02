@@ -6,7 +6,7 @@ from django.http import JsonResponse
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import update_session_auth_hash
-from django.contrib.auth.forms import PasswordChangeForm
+from django.contrib.auth.forms import PasswordChangeForm, UserCreationForm
 from .forms import CustomPasswordChangeForm
 from django.contrib.auth import logout
 from django import forms
@@ -124,7 +124,27 @@ def create_account(request):
 
         print(f"First Name: {first_name}, Last Name: {last_name}")
 
-        # Create a new user
+        errors = {}
+
+        # Check if username already exists
+        if User.objects.filter(username=username).exists():
+            errors['username_error'] = 'This username is already in use.'
+
+        # Check if email already exists
+        if User.objects.filter(email=email).exists():
+            errors['email_error'] = 'This email is already in use.'
+
+        if errors:
+            # If errors exist, re-render the form with error messages and previously entered data
+            return render(request, 'atlFoodFinder/create_account.html', {
+                'errors': errors,
+                'username': username,
+                'email': email,
+                'first_name': first_name,
+                'last_name': last_name
+            })
+
+        # Create a new user if no issues
         try:
             user = User.objects.create_user(
                 username=username,
@@ -139,7 +159,8 @@ def create_account(request):
         except Exception as e:
             return JsonResponse({'status': 'error', 'message': str(e)})
 
-    return render(request, 'atlFoodFinder/create_account.html')
+    return render(request, 'atlFoodFinder/create_account.html', {'errors': {}})
+
 
 @login_required
 def favorites(request):
