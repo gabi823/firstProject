@@ -11,6 +11,8 @@ from .forms import CustomPasswordChangeForm
 from django.contrib.auth import logout
 from django import forms
 from .models import FavoriteRestaurant
+from django.contrib.auth.password_validation import validate_password
+from django.core.exceptions import ValidationError
 
 # Create your views here.
 
@@ -102,7 +104,6 @@ def profile_page(request):
     else:
         form = CustomPasswordChangeForm()
 
-        # Render the profile page with the form
     return render(request, 'atlFoodFinder/profile_page.html', {
         'user': request.user,
         'form': form,
@@ -116,13 +117,12 @@ def logout_user(request):
 
 def create_account(request):
     if request.method == 'POST':
+        # Directly retrieve the POST data instead of trying to load JSON
         username = request.POST.get('username')
         password = request.POST.get('password')
         email = request.POST.get('email')
         first_name = request.POST.get('first_name')
         last_name = request.POST.get('last_name')
-
-        print(f"First Name: {first_name}, Last Name: {last_name}")
 
         errors = {}
 
@@ -134,8 +134,14 @@ def create_account(request):
         if User.objects.filter(email=email).exists():
             errors['email_error'] = 'This email is already in use.'
 
+        # Validate password using Django's built-in validation
+        try:
+            validate_password(password)
+        except ValidationError as e:
+            errors['password'] = list(e.messages)
+
+        # If any errors are present, re-render the form with error messages
         if errors:
-            # If errors exist, re-render the form with error messages and previously entered data
             return render(request, 'atlFoodFinder/create_account.html', {
                 'errors': errors,
                 'username': username,
@@ -144,7 +150,7 @@ def create_account(request):
                 'last_name': last_name
             })
 
-        # Create a new user if no issues
+        # If no errors, proceed to create the account
         try:
             user = User.objects.create_user(
                 username=username,
@@ -157,14 +163,20 @@ def create_account(request):
             login(request, user)  # Automatically log in the user
             return redirect('atlFoodFinder:show_map')  # Redirect to show_map page
         except Exception as e:
-            return JsonResponse({'status': 'error', 'message': str(e)})
+            errors['general'] = 'An error occurred while creating the account. Please try again.'
+            return render(request, 'atlFoodFinder/create_account.html', {
+                'errors': errors,
+                'username': username,
+                'email': email,
+                'first_name': first_name,
+                'last_name': last_name
+            })
 
+    # In case of a GET request, render the empty form
     return render(request, 'atlFoodFinder/create_account.html', {'errors': {}})
-
 
 @login_required
 def favorites(request):
-    # Get all favorite restaurants for the current user
     favorites = FavoriteRestaurant.objects.filter(user=request.user)
     return render(request, 'atlFoodFinder/show_map.html', {'favorites': favorites})
 
@@ -182,34 +194,27 @@ def login_user(request):
     if request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('password')
-        print(f"Username: {username}, Password: {password}")
 
-        # Authenticate the user
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
-            print(f'User {username} authenticated successfully')
             return JsonResponse({'status': 'success', 'redirect_url': '/show_map/'})
         else:
-            print("Invalid credentials")
             return JsonResponse({'status': 'error', 'message': 'Invalid username or password'})
     return render(request, 'atlFoodFinder/login.html')
+
 def reviews(request):
     return render(request, 'atlFoodFinder/reviews.html')
+
 def change_password(request):
     if request.method == 'POST':
         form = CustomPasswordChangeForm(request.POST)
         if form.is_valid():
-            # Get new password and update the user’s password
             new_password1 = form.cleaned_data['new_password1']
             request.user.set_password(new_password1)
             request.user.save()
-
-            # Update session hash to keep the user logged in
             update_session_auth_hash(request, request.user)
-
-            # Redirect to a success page after the password change
-            return redirect('password_change_done')  # Make sure this URL exists
+            return redirect('password_change_done')
     else:
         form = CustomPasswordChangeForm()
 

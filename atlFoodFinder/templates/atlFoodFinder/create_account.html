@@ -2,7 +2,6 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="csrf-token" content="{{ csrf_token }}">
     <link href="https://fonts.googleapis.com/css?family=Rethink+Sans&display=swap" rel="stylesheet" />
     <title>ATL Food Finder</title>
     <style>
@@ -53,8 +52,6 @@
             cursor: pointer;
             margin-right: 10px;
         }
-
-        /* Error handling CSS */
         .is-invalid {
             border-color: red;
         }
@@ -67,138 +64,62 @@
 
 <body>
     <div id="popup-box"></div>
+    <div class="popup-box">
+        <div class="popup-content">
+            <h1>Create Account</h1>
+            <form id="login-form" method="POST" action="/create_account/">
+                {% csrf_token %}
+
+                <!-- Email field with error handling -->
+                <input type="email" name="email" class="form-input {% if errors.email_error %}is-invalid{% endif %}" placeholder="Email" value="{{ email|default_if_none:'' }}" required><br>
+                {% if errors.email_error %}<div class="invalid-feedback">{{ errors.email_error }}</div>{% endif %}
+
+                <input type="text" name="first_name" class="form-input" placeholder="First Name" value="{{ first_name|default_if_none:'' }}" required><br>
+                <input type="text" name="last_name" class="form-input" placeholder="Last Name" value="{{ last_name|default_if_none:'' }}" required><br>
+
+                <!-- Username field with error handling -->
+                <input type="text" name="username" class="form-input {% if errors.username_error %}is-invalid{% endif %}" placeholder="Username" value="{{ username|default_if_none:'' }}" required><br>
+                {% if errors.username_error %}<div class="invalid-feedback">{{ errors.username_error }}</div>{% endif %}
+
+                <input type="password" name="password" class="form-input" placeholder="Password" required autocomplete="new-password"><br>
+                <p id="min-length" style="color: red;">At least 8 characters</p>
+                <p id="number-required" style="color: red;">At least 1 number</p>
+                <p id="special-required" style="color: red;">At least 1 special character</p>
+
+                {% if errors.password %}
+                    <div class="invalid-feedback">{{ errors.password|join:", " }}</div>
+                {% endif %}
+
+                <button type="submit" class="create-account-btn">Create Account</button>
+            </form>
+        </div>
+    </div>
+
     <script>
-        function createPopup(contentHTML) {
-            const popupContainer = document.getElementById('popup-box');
-            const popupBox = document.createElement('div');
-            const popupContent = document.createElement('div');
+        function validatePassword(password) {
+            const minLength = password.length >= 8;
+            const hasNumber = /\d/.test(password);
+            const hasSpecial = /[!@#$%^&*(),.?":{}|<>]/.test(password);
 
-            popupBox.className = 'popup-box';
-            popupContent.className = 'popup-content';
-            popupContent.innerHTML = contentHTML;
-
-            popupBox.appendChild(popupContent);
-            popupContainer.appendChild(popupBox);
+            return {
+                isValid: minLength && hasNumber && hasSpecial,
+                minLength: minLength,
+                hasNumber: hasNumber,
+                hasSpecial: hasSpecial
+            };
         }
-
-        const createAccountHTML =
-            '<h1>Create Account</h1>' +
-            '<form id="login-form" method="post" action="/create_account/">' +
-            '{% csrf_token %}' +
-
-            // Email field with error handling
-            '<input type="email" name="email" class="form-input {% if errors.email_error %}is-invalid{% endif %}" placeholder="Email" value="{{ email|default_if_none:'' }}" required><br>' +
-            '{% if errors.email_error %}<div class="invalid-feedback">{{ errors.email_error }}</div>{% endif %}' +
-
-            '<input type="text" name="first_name" class="form-input" placeholder="First Name" value="{{ first_name|default_if_none:'' }}" required><br>' +
-            '<input type="text" name="last_name" class="form-input" placeholder="Last Name" value="{{ last_name|default_if_none:'' }}" required><br>' +
-
-            // Username field with error handling
-            '<input type="text" name="username" class="form-input {% if errors.username_error %}is-invalid{% endif %}" placeholder="Username" value="{{ username|default_if_none:'' }}" required><br>' +
-            '{% if errors.username_error %}<div class="invalid-feedback">{{ errors.username_error }}</div>{% endif %}' +
-
-            '<input type="password" name="password" class="form-input" placeholder="Password" required><br>' +
-            '<button type="submit" class="create-account-btn">Create Account</button>' +
-            '</form>';
 
         window.onload = function() {
-            createPopup(createAccountHTML);
+            const passwordInput = document.querySelector('input[name="password"]');
 
-            document.getElementById("password").addEventListener("input", function () {
-                var password = this.value;
-                var minLength = document.getElementById("min-length");
-                var numberRequired = document.getElementById("number-required");
-                var specialRequired = document.getElementById("special-required");
+            passwordInput.addEventListener('input', function() {
+                const validationResult = validatePassword(this.value);
 
-                var isValid = true;
-
-                if (password.length >= 8) {
-                    minLength.style.color = "green";
-                } else {
-                    minLength.style.color = "red";
-                    isValid = false;
-                }
-
-                if (/\d/.test(password)) {
-                    numberRequired.style.color = "green";
-                } else {
-                    numberRequired.style.color = "red";
-                    isValid = false;
-                }
-
-                if (/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
-                    specialRequired.style.color = "green";
-                } else {
-                    specialRequired.style.color = "red";
-                    isValid = false;
-                }
+                document.getElementById("min-length").style.color = validationResult.minLength ? "green" : "red";
+                document.getElementById("number-required").style.color = validationResult.hasNumber ? "green" : "red";
+                document.getElementById("special-required").style.color = validationResult.hasSpecial ? "green" : "red";
             });
-
-            document.querySelector(".create-account-btn").addEventListener("click", function(event) {
-                var password = document.querySelector("input[name='password']").value;
-
-                if (!validatePassword(password)) {
-                    event.preventDefault();
-                    alert("Your password doesn't meet the requirements. Please try again.");
-                }
-            });
-        }
-
-        function validatePassword(password) {
-            var minLength = password.length >= 8;
-            var hasNumber = /\d/.test(password);
-            var hasSpecial = /[!@#$%^&*(),.?":{}|<>]/.test(password);
-
-            return minLength && hasNumber && hasSpecial;
         }
     </script>
-
-<div id="map"></div>
-<script>
-    function initMap() {
-        const options = {
-            zoom: 12,
-            center: { lat: 33.748783, lng: -84.388168 },
-        };
-        const map = new google.maps.Map(document.getElementById('map'), options);
-    }
-</script>
-
-<script>
-    function submitCreateAccount(event) {
-        event.preventDefault();
-        const form = document.getElementById('create-account-form');
-        const formData = new FormData(form);
-        const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-        const password = formData.get('password');
-
-        if (!validatePassword(password)) {
-            alert("Password doesn't meet the requirements.");
-            return false;
-        }
-
-        fetch('/create_account/', {
-            method: 'POST',
-            body: formData,
-            headers: {
-                'X-CSRFToken': csrfToken
-            }
-        })
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === 'success') {
-                    alert(data.message);
-                    window.location.href = '/show_map/';
-                } else {
-                    alert('Error: ' + data.message);
-                }
-            })
-            .catch(error => console.error('Error: ', error));
-        return false;
-    }
-</script>
-
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDgFZC03jZ8-VLPhnewMrcDndXqD475ZOE&callback=initMap" async defer></script>
-
 </body>
 </html>
