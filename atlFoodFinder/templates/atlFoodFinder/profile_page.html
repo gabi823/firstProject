@@ -376,6 +376,11 @@
                         </div>
                     {% endif %}
                 </div>
+
+                <p id="min-length" style="color: red;">At least 8 characters</p>
+                <p id="number-required" style="color: red;">At least 1 number</p>
+                <p id="special-required" style="color: red;">At least 1 special character</p>
+
                 <button type="submit">Submit New Password</button>
             </form>
         </div>
@@ -383,21 +388,7 @@
     </div>
 
     <script>
-        window.onload = function() {
-            var messageContent = '';
 
-            {% if success_message %}
-                messageContent += "{{ success_message|escapejs }}\n";
-            {% endif %}
-            {% if error_message %}
-                messageContent += "{{ error_message|escapejs }}\n";
-            {% endif %}
-
-            // Show popup if there is a message
-            if (messageContent) {
-                alert(messageContent);
-            }
-        };
         document.getElementById("change-password-btn").addEventListener("click", function () {
             var form = document.getElementById("change-password-form");
             if (form.style.display === "none") {
@@ -406,6 +397,34 @@
                 form.style.display = "none";
             }
         });
+
+        // Reusing the password validation function
+        function validatePassword(password) {
+            const minLength = password.length >= 8;
+            const hasNumber = /\d/.test(password);
+            const hasSpecial = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+
+            return {
+                isValid: minLength && hasNumber && hasSpecial,
+                minLength: minLength,
+                hasNumber: hasNumber,
+                hasSpecial: hasSpecial
+            };
+        }
+
+        // Applying the password validation logic to the new password fields
+        window.onload = function() {
+            const passwordInput = document.querySelector('input[name="new_password1"]');
+
+            passwordInput.addEventListener('input', function() {
+                const validationResult = validatePassword(this.value);
+
+                document.getElementById("min-length").style.color = validationResult.minLength ? "green" : "red";
+                document.getElementById("number-required").style.color = validationResult.hasNumber ? "green" : "red";
+                document.getElementById("special-required").style.color = validationResult.hasSpecial ? "green" : "red";
+            });
+        }
+
     </script>
 
     <script>
