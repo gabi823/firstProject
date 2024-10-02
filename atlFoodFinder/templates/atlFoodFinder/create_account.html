@@ -53,6 +53,15 @@
             cursor: pointer;
             margin-right: 10px;
         }
+
+        /* Error handling CSS */
+        .is-invalid {
+            border-color: red;
+        }
+        .invalid-feedback {
+            color: red;
+            font-size: 12px;
+        }
     </style>
 </head>
 
@@ -72,71 +81,76 @@
             popupContainer.appendChild(popupBox);
         }
 
-            const createAccountHTML =
-                '<h1>Create Account</h1>' +
-                '<form id="login-form" method = "post" action = "/create_account/">' +
-                '{% csrf_token %}' +
-                '<input type="email" name="email" class="form-input" placeholder="Email" required><br>' +
-                '<input type="text" name="first_name" class="form-input" placeholder="First Name" required><br>' +
-                '<input type="text" name="last_name" class="form-input" placeholder="Last Name" required><br>' +
-                '<input type="text" name="username" class="form-input" placeholder="Username" required><br>' +
-                '<input type="password" name="password" class="form-input" placeholder="Password" required><br>' +
-                '<button type="submit" class="create-account-btn">Create Account</button>'+
-                '</form>';
+        const createAccountHTML =
+            '<h1>Create Account</h1>' +
+            '<form id="login-form" method="post" action="/create_account/">' +
+            '{% csrf_token %}' +
 
-            window.onload = function() {
-                createPopup(createAccountHTML);
+            // Email field with error handling
+            '<input type="email" name="email" class="form-input {% if errors.email_error %}is-invalid{% endif %}" placeholder="Email" value="{{ email|default_if_none:'' }}" required><br>' +
+            '{% if errors.email_error %}<div class="invalid-feedback">{{ errors.email_error }}</div>{% endif %}' +
 
-                document.getElementById("password").addEventListener("input", function () {
-                    var password = this.value;
-                    var minLength = document.getElementById("min-length");
-                    var numberRequired = document.getElementById("number-required");
-                    var specialRequired = document.getElementById("special-required");
+            '<input type="text" name="first_name" class="form-input" placeholder="First Name" value="{{ first_name|default_if_none:'' }}" required><br>' +
+            '<input type="text" name="last_name" class="form-input" placeholder="Last Name" value="{{ last_name|default_if_none:'' }}" required><br>' +
 
-                    var isValid = true;
+            // Username field with error handling
+            '<input type="text" name="username" class="form-input {% if errors.username_error %}is-invalid{% endif %}" placeholder="Username" value="{{ username|default_if_none:'' }}" required><br>' +
+            '{% if errors.username_error %}<div class="invalid-feedback">{{ errors.username_error }}</div>{% endif %}' +
 
-                    if (password.length >= 8) {
-                        minLength.style.color = "green";
-                    } else {
-                        minLength.style.color = "red";
-                        isValid = false;
-                    }
+            '<input type="password" name="password" class="form-input" placeholder="Password" required><br>' +
+            '<button type="submit" class="create-account-btn">Create Account</button>' +
+            '</form>';
 
-                    if (/\d/.test(password)) {
-                        numberRequired.style.color = "green";
-                    } else {
-                        numberRequired.style.color = "red";
-                        isValid = false;
-                    }
+        window.onload = function() {
+            createPopup(createAccountHTML);
 
-                    if (/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
-                        specialRequired.style.color = "green";
-                    } else {
-                        specialRequired.style.color = "red";
-                        isValid = false;
-                    }
-                });
+            document.getElementById("password").addEventListener("input", function () {
+                var password = this.value;
+                var minLength = document.getElementById("min-length");
+                var numberRequired = document.getElementById("number-required");
+                var specialRequired = document.getElementById("special-required");
 
-                document.querySelector(".create-account-btn").addEventListener("click", function(event) {
-                    var password = document.querySelector("input[name='password']").value;
+                var isValid = true;
 
-                    if (!validatePassword(password)) {
-                        event.preventDefault();
-                        alert("Your password doesn't meet the requirements. Please try again.");
-                    }
-                });
-            }
+                if (password.length >= 8) {
+                    minLength.style.color = "green";
+                } else {
+                    minLength.style.color = "red";
+                    isValid = false;
+                }
 
+                if (/\d/.test(password)) {
+                    numberRequired.style.color = "green";
+                } else {
+                    numberRequired.style.color = "red";
+                    isValid = false;
+                }
 
-            function validatePassword(password) {
-                var minLength = password.length >= 8;
-                var hasNumber = /\d/.test(password);
-                var hasSpecial = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+                if (/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
+                    specialRequired.style.color = "green";
+                } else {
+                    specialRequired.style.color = "red";
+                    isValid = false;
+                }
+            });
 
-                return minLength && hasNumber && hasSpecial;
-            }
+            document.querySelector(".create-account-btn").addEventListener("click", function(event) {
+                var password = document.querySelector("input[name='password']").value;
 
+                if (!validatePassword(password)) {
+                    event.preventDefault();
+                    alert("Your password doesn't meet the requirements. Please try again.");
+                }
+            });
+        }
 
+        function validatePassword(password) {
+            var minLength = password.length >= 8;
+            var hasNumber = /\d/.test(password);
+            var hasSpecial = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+
+            return minLength && hasNumber && hasSpecial;
+        }
     </script>
 
 <div id="map"></div>
@@ -147,7 +161,6 @@
             center: { lat: 33.748783, lng: -84.388168 },
         };
         const map = new google.maps.Map(document.getElementById('map'), options);
-
     }
 </script>
 
@@ -172,24 +185,20 @@
             }
         })
             .then(response => response.json())
-        .then(data => {
-            if (data.status === 'success') {
-                alert(data.message);
-                window.location.href = '/show_map/';
-            } else {
-               alert('Error: ' + data.message());
-            }
-       })
-       .catch(error => console.error('Error: ', error));
+            .then(data => {
+                if (data.status === 'success') {
+                    alert(data.message);
+                    window.location.href = '/show_map/';
+                } else {
+                    alert('Error: ' + data.message);
+                }
+            })
+            .catch(error => console.error('Error: ', error));
         return false;
     }
 </script>
 
-
-
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDgFZC03jZ8-VLPhnewMrcDndXqD475ZOE&callback=initMap" async defer></script>
-
-
 
 </body>
 </html>
