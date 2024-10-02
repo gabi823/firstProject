@@ -75,115 +75,100 @@
             const createAccountHTML =
                 '<h1>Create Account</h1>' +
                 '<form id="login-form" method = "post" action = "/create_account/">' +
-                '{% csrf_token %}' +
+                '<input type="hidden" name="csrfmiddlewaretoken" value="' + document.querySelector('meta[name="csrf-token"]').getAttribute('content') + '">' +
                 '<input type="email" name="email" class="form-input" placeholder="Email" required><br>' +
                 '<input type="text" name="first_name" class="form-input" placeholder="First Name" required><br>' +
                 '<input type="text" name="last_name" class="form-input" placeholder="Last Name" required><br>' +
                 '<input type="text" name="username" class="form-input" placeholder="Username" required><br>' +
-                '<input type="password" name="password" class="form-input" placeholder="Password" required><br>' +
+                '<input type="password" name="password" class="form-input" placeholder="Password" required autocomplete="new-password"><br>' +
+                '<p id="min-length" style="color: red;">At least 8 characters</p>' +
+                '<p id="number-required" style="color: red;">At least 1 number</p>' +
+                '<p id="special-required" style="color: red;">At least 1 special character</p>' +
                 '<button type="submit" class="create-account-btn">Create Account</button>'+
                 '</form>';
 
             window.onload = function() {
                 createPopup(createAccountHTML);
 
-                document.getElementById("password").addEventListener("input", function () {
-                    var password = this.value;
-                    var minLength = document.getElementById("min-length");
-                    var numberRequired = document.getElementById("number-required");
-                    var specialRequired = document.getElementById("special-required");
+                const form = document.getElementById('login-form');
+                if (form) {
+                    form.addEventListener('submit', submitCreateAccount);
+                }
 
-                    var isValid = true;
 
-                    if (password.length >= 8) {
-                        minLength.style.color = "green";
-                    } else {
-                        minLength.style.color = "red";
-                        isValid = false;
-                    }
+                document.addEventListener('input', function (event) {
+                    if (event.target && event.target.id === "password") {
+                        var password = event.target.value;
+                        var minLength = document.getElementById("min-length");
+                        var numberRequired = document.getElementById("number-required");
+                        var specialRequired = document.getElementById("special-required");
 
-                    if (/\d/.test(password)) {
-                        numberRequired.style.color = "green";
-                    } else {
-                        numberRequired.style.color = "red";
-                        isValid = false;
-                    }
-
-                    if (/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
-                        specialRequired.style.color = "green";
-                    } else {
-                        specialRequired.style.color = "red";
-                        isValid = false;
+                        minLength.style.color = password.length >= 8 ? "green" : "red";
+                        numberRequired.style.color = /\d/.test(password) ? "green" : "red";
+                        specialRequired.style.color = /[!@#$%^&*(),.?":{}|<>]/.test(password) ? "green" : "red";
                     }
                 });
 
-                document.querySelector(".create-account-btn").addEventListener("click", function(event) {
+                document.querySelector(".create-account-btn").addEventListener("click", function() {
                     var password = document.querySelector("input[name='password']").value;
-
                     if (!validatePassword(password)) {
-                        event.preventDefault();
-                        alert("Your password doesn't meet the requirements. Please try again.");
+                        document.querySelector("input[name='password']").setCustomValidity("Password doesn't meet the requirements.");
+                    } else {
+                        document.querySelector("input[name='password']").setCustomValidity("");
                     }
-                });
+                });}
+
+        function submitCreateAccount(event) {
+            event.preventDefault();
+            const form = event.target;
+            const formData = new FormData(form);
+            const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+            const password = formData.get('password');
+
+            if (!validatePassword(password)) {
+                alert("Password doesn't meet the requirements.");
+                return;
             }
 
+            fetch('/create_account/', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': csrfToken
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    alert(data.message);
+                    window.location.href = '/show_map/';
+                } else {
+                    alert('Error: ' + data.message);
+                }
+            })
+            .catch(error => console.error('Error: ', error));
+        }
 
-            function validatePassword(password) {
-                var minLength = password.length >= 8;
-                var hasNumber = /\d/.test(password);
-                var hasSpecial = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+        function validatePassword(password) {
+            var minLength = password.length >= 8;
+            var hasNumber = /\d/.test(password);
+            var hasSpecial = /[!@#$%^&*(),.?":{}|<>]/.test(password);
 
-                return minLength && hasNumber && hasSpecial;
-            }
+            return minLength && hasNumber && hasSpecial;
+        }
 
+        function initMap() {
+            const options = {
+                zoom: 12,
+                center: { lat: 33.748783, lng: -84.388168 },
+            };
+            const map = new google.maps.Map(document.getElementById('map'), options);
+
+        }
 
     </script>
 
 <div id="map"></div>
-<script>
-    function initMap() {
-        const options = {
-            zoom: 12,
-            center: { lat: 33.748783, lng: -84.388168 },
-        };
-        const map = new google.maps.Map(document.getElementById('map'), options);
-
-    }
-</script>
-
-<script>
-    function submitCreateAccount(event) {
-        event.preventDefault();
-        const form = document.getElementById('create-account-form');
-        const formData = new FormData(form);
-        const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-        const password = formData.get('password');
-
-        if (!validatePassword(password)) {
-            alert("Password doesn't meet the requirements.");
-            return false;
-        }
-
-        fetch('/create_account/', {
-            method: 'POST',
-            body: formData,
-            headers: {
-                'X-CSRFToken': csrfToken
-            }
-        })
-            .then(response => response.json())
-        .then(data => {
-            if (data.status === 'success') {
-                alert(data.message);
-                window.location.href = '/show_map/';
-            } else {
-               alert('Error: ' + data.message());
-            }
-       })
-       .catch(error => console.error('Error: ', error));
-        return false;
-    }
-</script>
 
 
 

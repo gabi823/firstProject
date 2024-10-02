@@ -161,20 +161,22 @@ def login_user(request):
     if request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('password')
-        print(f"Username: {username}, Password: {password}")
 
         # Authenticate the user
         user = authenticate(request, username=username, password=password)
+
         if user is not None:
             login(request, user)
-            print(f'User {username} authenticated successfully')
+            print(f"User's first name: {user.first_name}")
             return JsonResponse({'status': 'success', 'redirect_url': '/show_map/'})
         else:
             print("Invalid credentials")
             return JsonResponse({'status': 'error', 'message': 'Invalid username or password'})
     return render(request, 'atlFoodFinder/login.html')
+
 def reviews(request):
     return render(request, 'atlFoodFinder/reviews.html')
+
 def change_password(request):
     if request.method == 'POST':
         form = CustomPasswordChangeForm(request.POST)
